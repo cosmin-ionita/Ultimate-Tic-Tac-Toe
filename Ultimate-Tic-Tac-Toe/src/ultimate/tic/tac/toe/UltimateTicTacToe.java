@@ -20,7 +20,7 @@ public class UltimateTicTacToe {
         System.out.println("Old message");
         System.out.println("Nu sunt mrpatpat");
         System.out.println("Mi se vede poza?");
-        
+        System.out.println("Da, se vede");
     }
     
 }
