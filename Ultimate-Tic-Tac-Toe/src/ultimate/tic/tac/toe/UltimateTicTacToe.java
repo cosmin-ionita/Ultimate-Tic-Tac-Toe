@@ -19,6 +19,7 @@ public class UltimateTicTacToe {
         System.out.println("Good morning, Developpers!");
         System.out.println("Old message");
         System.out.println("Nu sunt mrpatpat");
+        System.out.println("Mi se vede poza?");
         
     }
     
