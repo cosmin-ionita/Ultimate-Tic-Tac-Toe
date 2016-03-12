@@ -21,6 +21,7 @@ public class UltimateTicTacToe {
         System.out.println("Nu sunt mrpatpat");
         System.out.println("Mi se vede poza?");
         System.out.println("Da, se vede");
+        System.out.println("In final zic si eu ceva");
     }
     
 }
