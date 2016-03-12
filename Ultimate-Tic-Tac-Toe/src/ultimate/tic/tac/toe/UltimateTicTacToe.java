@@ -17,6 +17,7 @@ public class UltimateTicTacToe {
     public static void main(String[] args) {
         
         System.out.println("Good morning, Developpers!");
+        System.out.println("New message");
     
     }
     
