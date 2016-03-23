@@ -43,7 +43,7 @@ public class BotStarter {
      */
     public int[][] empty = new int[3][3];
     
-    public boolean checkifbetter(Move m1, Move m2, Field f, Bounds b) {
+    public boolean checkifbetter(Move m1, Move m2, Field f) {
         Bounds move1 = getMacroboardBounds(m1.mX, m1.mY);
         Bounds move2 = getMacroboardBounds(m2.mX, m2.mY);
         
@@ -218,7 +218,7 @@ public class BotStarter {
                     if(best==null)
                         best=new Move(b.x_max-1,y);
                     else
-                        if(checkbestclose((new Move(b.x_max-1,y)),best,field))
+                        if(checkifbetter((new Move(b.x_max-1,y)),best,field))
                             best=new Move(b.x_max-1,y);   
                 }
             }
@@ -229,7 +229,7 @@ public class BotStarter {
                     if(best==null)
                         best=new Move(b.x_min+1,y);
                     else
-                        if(checkbestclose((new Move(b.x_min+1,y)),best,field))
+                        if(checkifbetter((new Move(b.x_min+1,y)),best,field))
                             best=new Move(b.x_min+1,y);
                 }
             }
@@ -240,7 +240,7 @@ public class BotStarter {
                     if(best==null)
                         best=new Move(b.x_min,y);
                     else
-                        if(checkbestclose((new Move(b.x_min,y)),best,field))
+                        if(checkifbetter((new Move(b.x_min,y)),best,field))
                             best=new Move(b.x_min,y);   
                 }
             }
@@ -258,7 +258,7 @@ public class BotStarter {
                     if(best==null)
                         best=new Move(x,b.y_max-1);
                     else
-                        if(checkbestclose((new Move(x,b.y_max-1)),best,field))
+                        if(checkifbetter((new Move(x,b.y_max-1)),best,field))
                             best=new Move(x,b.y_max-1); 
                 }
             }
@@ -269,7 +269,7 @@ public class BotStarter {
                     if(best==null)
                         best=new Move(x,b.y_min+1);
                     else
-                        if(checkbestclose((new Move(x,b.y_min+1)),best,field))
+                        if(checkifbetter((new Move(x,b.y_min+1)),best,field))
                             best=new Move(x,b.y_min+1); 
                 }
             }
@@ -280,7 +280,7 @@ public class BotStarter {
                     if(best==null)
                         best=new Move(x,b.y_min);
                     else
-                        if(checkbestclose((new Move(x,b.y_min)),best,field))
+                        if(checkifbetter((new Move(x,b.y_min)),best,field))
                             best=new Move(x,b.y_min); 
                 }
             }
@@ -298,7 +298,7 @@ public class BotStarter {
                 if(best==null)
                         best=new Move(b.x_max-1,b.y_max-1);
                     else
-                        if(checkbestclose((new Move(b.x_max-1,b.y_max-1)),best,field))
+                        if(checkifbetter((new Move(b.x_max-1,b.y_max-1)),best,field))
                             best=new Move(b.x_max-1,b.y_max-1); 
             }
         }
@@ -309,7 +309,7 @@ public class BotStarter {
                 if(best==null)
                         best=new Move(b.x_min+1,b.y_min+1);
                     else
-                        if(checkbestclose((new Move(b.x_min+1,b.y_min+1)),best,field))
+                        if(checkifbetter((new Move(b.x_min+1,b.y_min+1)),best,field))
                             best=new Move(b.x_min+1,b.y_min+1); 
             }
         }
@@ -320,7 +320,7 @@ public class BotStarter {
                 if(best==null)
                         best=new Move(b.x_min,b.y_min);
                     else
-                        if(checkbestclose((new Move(b.x_min,b.y_min)),best,field))
+                        if(checkifbetter((new Move(b.x_min,b.y_min)),best,field))
                             best=new Move(b.x_min,b.y_min); 
             }
         }
@@ -331,7 +331,7 @@ public class BotStarter {
                 if(best==null)
                         best=new Move(b.x_min+1,b.y_min+1);
                     else
-                        if(checkbestclose((new Move(b.x_min+1,b.y_min+1)),best,field))
+                        if(checkifbetter((new Move(b.x_min+1,b.y_min+1)),best,field))
                             best=new Move(b.x_min+1,b.y_min+1); 
             }
         }
@@ -342,7 +342,7 @@ public class BotStarter {
                 if(best==null)
                         best=new Move(b.x_max-1,b.y_min);
                     else
-                        if(checkbestclose((new Move(b.x_max-1,b.y_min)),best,field))
+                        if(checkifbetter((new Move(b.x_max-1,b.y_min)),best,field))
                             best=new Move(b.x_max-1,b.y_min); 
             }
         }
@@ -353,7 +353,7 @@ public class BotStarter {
                 if(best==null)
                         best=new Move(b.x_min,b.y_max-1);
                     else
-                        if(checkbestclose((new Move(b.x_min,b.y_max-1)),best,field))
+                        if(checkifbetter((new Move(b.x_min,b.y_max-1)),best,field))
                             best=new Move(b.x_min,b.y_max-1); 
             }
         }
@@ -521,7 +521,80 @@ public class BotStarter {
         }
         return best;
     }
-    public Move calculate(int[][] moves,int x_min,int x_max,int y_min,int y_max)
+    
+     public Move calculate(Field field, Bounds position) {
+        
+        Move move = null;
+        int[][] moves = field.getAvailableMoves();
+        
+        Bounds best_next_move = null;
+        
+        
+        if(can_we_close(field, position)) {
+                return get_best_move_to_win(field, position); // returneaza mutarea de inchidere cea mai buna
+        }
+        
+        else if(can_enemy_close(field, position)) {
+                return get_best_block_move(field, position);
+        }
+        
+        else {
+                for(int i = position.x_min; i<position.x_max; i++) 
+                {
+            
+                    for(int j = position.y_min; j<position.y_max; j++) 
+                    {
+                
+                        if(moves[i][j] == 0)
+                        {
+                            if(getEmpty(i, j) == 0) {
+                            
+                                 setEmpty(getCadran(makeBounds(i, j)));
+                                 move = new Move(i, j);
+                             }   
+                            
+                            else if(can_enemy_close(field, getMacroboardBounds(i, j))) {  // if he can win
+                              // go on
+                            } else {
+                              
+                              if(best_next_move != null) {
+                                if(dominance(field, best_next_move) < dominance(field, getMacroboardBounds(i, j))) {
+                                  
+                                     best_next_move = getMacroboardBounds(i, j);
+                                  
+                                     move = new Move(i, j);
+                                }
+                              }
+                              else {
+                                  
+                                  best_next_move = getMacroboardBounds(i, j);
+                                  
+                                  move = new Move(i, j);
+                              }
+                          }
+                             
+                        
+                    }
+                }
+            }
+                
+            if(best_next_move == null) {
+                for (int x = position.x_min; x < position.x_max; x++)
+                    for (int y = position.y_min; y < position.y_max; y++) {
+                        
+                        if(moves[x][y] == 0) {
+                            move = new Move(x, y);
+                            break; 
+                        }
+                    }
+            }
+        }
+        
+        return move;
+     }    
+
+    
+    /*public Move calculate(int[][] moves,int x_min,int x_max,int y_min,int y_max)
     {
         Move move;
         int m1,m2,m3,m11,m22,m33,m31,m13;
@@ -720,7 +793,7 @@ public class BotStarter {
         }
         //daca nu am gasit nimic decisiv in macroboard returnez null
         return move; 
-    }
+    }*/
 	public Move makeTurn(Field field) {
                 //returneaza tabela 9x9 cu mutari de la runda curenta
 		int[][] moves = field.getAvailableMoves();
@@ -737,7 +810,7 @@ public class BotStarter {
                     y_min=0;
                     y_max=3;
                     //incerc sa gasesc o mutare decisiva in macroboard
-                    move=this.calculate(moves,x_min,x_max,y_min,y_max);
+                    move=this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
                     if(move!=null)
                         return move;
                 }
@@ -751,7 +824,7 @@ public class BotStarter {
                     y_min=3;
                     y_max=6;
                     //incerc sa gasesc o mutare decisiva in macroboard
-                    move=this.calculate(moves,x_min,x_max,y_min,y_max);
+                    move=this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
                     if(move!=null)
                         return move;
                 }
@@ -765,7 +838,7 @@ public class BotStarter {
                     y_min=6;
                     y_max=9;
                     //incerc sa gasesc o mutare decisiva in macroboard
-                    move=this.calculate(moves,x_min,x_max,y_min,y_max);
+                    move=this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
                     if(move!=null)
                         return move;
                 }
@@ -779,7 +852,7 @@ public class BotStarter {
                     y_min=0;
                     y_max=3;
                     //incerc sa gasesc o mutare decisiva in macroboard
-                    move=this.calculate(moves,x_min,x_max,y_min,y_max);
+                    move=this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
                     if(move!=null)
                         return move;
                 }
@@ -793,7 +866,7 @@ public class BotStarter {
                     y_min=3;
                     y_max=6;
                     //incerc sa gasesc o mutare decisiva in macroboard
-                    move=this.calculate(moves,x_min,x_max,y_min,y_max);
+                    move=this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
                     if(move!=null)
                         return move;
                 }
@@ -807,7 +880,7 @@ public class BotStarter {
                     y_min=6;
                     y_max=9;
                     //incerc sa gasesc o mutare decisiva in macroboard
-                    move=this.calculate(moves,x_min,x_max,y_min,y_max);
+                    move=this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
                     if(move!=null)
                         return move;
                 }
@@ -821,7 +894,7 @@ public class BotStarter {
                     y_min=0;
                     y_max=3;
                     //incerc sa gasesc o mutare decisiva in macroboard
-                    move=this.calculate(moves,x_min,x_max,y_min,y_max);
+                    move=this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
                     if(move!=null)
                         return move;
                 }
@@ -835,7 +908,7 @@ public class BotStarter {
                     y_min=3;
                     y_max=6;
                     //incerc sa gasesc o mutare decisiva in macroboard
-                    move=this.calculate(moves,x_min,x_max,y_min,y_max);
+                    move=this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
                     if(move!=null)
                         return move;
                 }
@@ -849,12 +922,14 @@ public class BotStarter {
                     y_min=6;
                     y_max=9;
                     //incerc sa gasesc o mutare decisiva in macroboard
-                    move=this.calculate(moves,x_min,x_max,y_min,y_max);
+                    move=this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
                     if(move!=null)
                         return move;
                 }
                 //daca nu am gasit nicio mutare decisiva pun prima mutare 
                 //valabila din ultimul macroboard activ gasit
+                
+                
                 for (int x = x_min; x < x_max; x++)
                     for (int y = y_min; y < y_max; y++)
                         if(moves[x][y]==0)
