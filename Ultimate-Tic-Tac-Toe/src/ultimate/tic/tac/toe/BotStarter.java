@@ -185,7 +185,330 @@ public class BotStarter {
         }
         return new Bounds();
     }
-
+     public Move get_best_block_move(Field field,Bounds b)
+    {
+        int[][] moves = field.getAvailableMoves();
+        int m1,m2,m3,m11,m22,m33,m31,m13;
+        Move move,best;
+        move=null;
+        best=null;
+        //parcurgere pe coloane a macroboard-ului
+        for (int y = b.y_min; y < b.y_max; y++) 
+        {
+            m1=moves[b.x_min][y];//casuta sus
+            m2=moves[b.x_min+1][y];//casuta mijloc
+            m3=moves[b.x_max-1][y];//casuta jos
+            //verific daca pot sa inchid macroboard-ul
+            if(m1==2 && m2==2)
+            {
+                if(m3==0)
+                {
+                    if(best==null)
+                        best=new Move(b.x_max-1,y);
+                    else
+                        if(checkbestclose((new Move(b.x_max-1,y)),best,field))
+                            best=new Move(b.x_max-1,y);   
+                }
+            }
+            if(m1==2 && m3==2)
+            {
+                if(m2==0)
+                {
+                    if(best==null)
+                        best=new Move(b.x_min+1,y);
+                    else
+                        if(checkbestclose((new Move(b.x_min+1,y)),best,field))
+                            best=new Move(b.x_min+1,y);
+                }
+            }
+            if (m3==2 && m2==2)
+            {
+                if(m1==0)
+                {
+                    if(best==null)
+                        best=new Move(b.x_min,y);
+                    else
+                        if(checkbestclose((new Move(b.x_min,y)),best,field))
+                            best=new Move(b.x_min,y);   
+                }
+            }
+        }
+        for (int x = b.x_min; x < b.x_max; x++) 
+        {
+            m1=moves[x][b.y_min]; // casuta stanga
+            m2=moves[x][b.y_min+1]; //casuta mijloc
+            m3=moves[x][b.y_max-1]; //casuta dreapta
+            //verific daca pot sa inchid macroboard-ul
+            if(m1==2 && m2==2)
+            {
+                if(m3==0)
+                {
+                    if(best==null)
+                        best=new Move(x,b.y_max-1);
+                    else
+                        if(checkbestclose((new Move(x,b.y_max-1)),best,field))
+                            best=new Move(x,b.y_max-1); 
+                }
+            }
+            if(m1==2 && m3==2)
+            {
+                if(m2==0)
+                {
+                    if(best==null)
+                        best=new Move(x,b.y_min+1);
+                    else
+                        if(checkbestclose((new Move(x,b.y_min+1)),best,field))
+                            best=new Move(x,b.y_min+1); 
+                }
+            }
+            if (m3==2 && m2==2)
+            {
+                if(m1==0)
+                {
+                    if(best==null)
+                        best=new Move(x,b.y_min);
+                    else
+                        if(checkbestclose((new Move(x,b.y_min)),best,field))
+                            best=new Move(x,b.y_min); 
+                }
+            }
+        }
+        m11=moves[b.x_min][b.y_min];
+        m22=moves[b.x_min+1][b.y_min+1];
+        m33=moves[b.x_max-1][b.y_max-1];
+        m13=moves[b.x_min][b.y_max-1];
+        m31=moves[b.x_max-1][b.y_min];
+        //verific daca pot sa inchid macroboard-ul
+        if(m11==2 && m22==2)
+        {
+            if(m33==0)
+            {
+                if(best==null)
+                        best=new Move(b.x_max-1,b.y_max-1);
+                    else
+                        if(checkbestclose((new Move(b.x_max-1,b.y_max-1)),best,field))
+                            best=new Move(b.x_max-1,b.y_max-1); 
+            }
+        }
+        if(m11==2 && m33==2)
+        {
+            if(m22==0)
+            {
+                if(best==null)
+                        best=new Move(b.x_min+1,b.y_min+1);
+                    else
+                        if(checkbestclose((new Move(b.x_min+1,b.y_min+1)),best,field))
+                            best=new Move(b.x_min+1,b.y_min+1); 
+            }
+        }
+        if(m22==2 && m33==2)
+        {
+            if(m11==0)
+            {
+                if(best==null)
+                        best=new Move(b.x_min,b.y_min);
+                    else
+                        if(checkbestclose((new Move(b.x_min,b.y_min)),best,field))
+                            best=new Move(b.x_min,b.y_min); 
+            }
+        }
+        if(m13==2 && m31==2)
+        {
+            if(m22==0)
+            {
+                if(best==null)
+                        best=new Move(b.x_min+1,b.y_min+1);
+                    else
+                        if(checkbestclose((new Move(b.x_min+1,b.y_min+1)),best,field))
+                            best=new Move(b.x_min+1,b.y_min+1); 
+            }
+        }
+        if(m13==2 && m22==2)
+        {
+            if(m31==0)
+            {
+                if(best==null)
+                        best=new Move(b.x_max-1,b.y_min);
+                    else
+                        if(checkbestclose((new Move(b.x_max-1,b.y_min)),best,field))
+                            best=new Move(b.x_max-1,b.y_min); 
+            }
+        }
+        if(m22==2 && m31==2)
+        {
+            if(m13==0)
+            {
+                if(best==null)
+                        best=new Move(b.x_min,b.y_max-1);
+                    else
+                        if(checkbestclose((new Move(b.x_min,b.y_max-1)),best,field))
+                            best=new Move(b.x_min,b.y_max-1); 
+            }
+        }
+        return best;
+    }
+    public Move get_best_move_to_win(Field field,Bounds b)
+    {
+        int[][] moves = field.getAvailableMoves();
+        int m1,m2,m3,m11,m22,m33,m31,m13;
+        Move move,best;
+        move=null;
+        best=null;
+        //parcurgere pe coloane a macroboard-ului
+        for (int y = b.y_min; y < b.y_max; y++) 
+        {
+            m1=moves[b.x_min][y];//casuta sus
+            m2=moves[b.x_min+1][y];//casuta mijloc
+            m3=moves[b.x_max-1][y];//casuta jos
+            //verific daca pot sa inchid macroboard-ul
+            if(m1==1 && m2==1)
+            {
+                if(m3==0)
+                {
+                    if(best==null)
+                        best=new Move(b.x_max-1,y);
+                    else
+                        if(checkifbetter((new Move(b.x_max-1,y)),best,field))
+                            best=new Move(b.x_max-1,y);   
+                }
+            }
+            if(m1==1 && m3==1)
+            {
+                if(m2==0)
+                {
+                    if(best==null)
+                        best=new Move(b.x_min+1,y);
+                    else
+                        if(checkifbetter((new Move(b.x_min+1,y)),best,field))
+                            best=new Move(b.x_min+1,y);
+                }
+            }
+            if (m3==1 && m2==1)
+            {
+                if(m1==0)
+                {
+                    if(best==null)
+                        best=new Move(b.x_min,y);
+                    else
+                        if(checkifbetter((new Move(b.x_min,y)),best,field))
+                            best=new Move(b.x_min,y);   
+                }
+            }
+        }
+        for (int x = b.x_min; x < b.x_max; x++) 
+        {
+            m1=moves[x][b.y_min]; // casuta stanga
+            m2=moves[x][b.y_min+1]; //casuta mijloc
+            m3=moves[x][b.y_max-1]; //casuta dreapta
+            //verific daca pot sa inchid macroboard-ul
+            if(m1==1 && m2==1)
+            {
+                if(m3==0)
+                {
+                    if(best==null)
+                        best=new Move(x,b.y_max-1);
+                    else
+                        if(checkifbetter((new Move(x,b.y_max-1)),best,field))
+                            best=new Move(x,b.y_max-1); 
+                }
+            }
+            if(m1==1 && m3==1)
+            {
+                if(m2==0)
+                {
+                    if(best==null)
+                        best=new Move(x,b.y_min+1);
+                    else
+                        if(checkifbetter((new Move(x,b.y_min+1)),best,field))
+                            best=new Move(x,b.y_min+1); 
+                }
+            }
+            if (m3==1 && m2==1)
+            {
+                if(m1==0)
+                {
+                    if(best==null)
+                        best=new Move(x,b.y_min);
+                    else
+                        if(checkifbetter((new Move(x,b.y_min)),best,field))
+                            best=new Move(x,b.y_min); 
+                }
+            }
+        }
+        m11=moves[b.x_min][b.y_min];
+        m22=moves[b.x_min+1][b.y_min+1];
+        m33=moves[b.x_max-1][b.y_max-1];
+        m13=moves[b.x_min][b.y_max-1];
+        m31=moves[b.x_max-1][b.y_min];
+        //verific daca pot sa inchid macroboard-ul
+        if(m11==1 && m22==1)
+        {
+            if(m33==0)
+            {
+                if(best==null)
+                        best=new Move(b.x_max-1,b.y_max-1);
+                    else
+                        if(checkifbetter((new Move(b.x_max-1,b.y_max-1)),best,field))
+                            best=new Move(b.x_max-1,b.y_max-1); 
+            }
+        }
+        if(m11==1 && m33==1)
+        {
+            if(m22==0)
+            {
+                if(best==null)
+                        best=new Move(b.x_min+1,b.y_min+1);
+                    else
+                        if(checkifbetter((new Move(b.x_min+1,b.y_min+1)),best,field))
+                            best=new Move(b.x_min+1,b.y_min+1); 
+            }
+        }
+        if(m22==1 && m33==1)
+        {
+            if(m11==0)
+            {
+                if(best==null)
+                        best=new Move(b.x_min,b.y_min);
+                    else
+                        if(checkifbetter((new Move(b.x_min,b.y_min)),best,field))
+                            best=new Move(b.x_min,b.y_min); 
+            }
+        }
+        if(m13==1 && m31==1)
+        {
+            if(m22==0)
+            {
+                if(best==null)
+                        best=new Move(b.x_min+1,b.y_min+1);
+                    else
+                        if(checkifbetter((new Move(b.x_min+1,b.y_min+1)),best,field))
+                            best=new Move(b.x_min+1,b.y_min+1); 
+            }
+        }
+        if(m13==1 && m22==1)
+        {
+            if(m31==0)
+            {
+                if(best==null)
+                        best=new Move(b.x_max-1,b.y_min);
+                    else
+                        if(checkifbetter((new Move(b.x_max-1,b.y_min)),best,field))
+                            best=new Move(b.x_max-1,b.y_min); 
+            }
+        }
+        if(m22==1 && m31==1)
+        {
+            if(m13==0)
+            {
+                if(best==null)
+                        best=new Move(b.x_min,b.y_max-1);
+                    else
+                        if(checkifbetter((new Move(b.x_min,b.y_max-1)),best,field))
+                            best=new Move(b.x_min,b.y_max-1); 
+            }
+        }
+        return best;
+    }
     public Move calculate(int[][] moves,int x_min,int x_max,int y_min,int y_max)
     {
         Move move;
