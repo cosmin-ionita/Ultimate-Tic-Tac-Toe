@@ -41,8 +41,15 @@ public class BotStarter {
      *
      * @return The column where the turn was made.
      */
-    public int[][] empty = new int[3][3];
-    
+    public int[][] empty;
+    public BotStarter()
+    {
+        empty=new int[3][3];
+        int i,j;
+        for(i=0;i<3;i++)
+            for(j=0;j<3;j++)
+                empty[i][j]=0;
+    }
     public boolean checkifbetter(Move m1, Move m2, Field f) {
         Bounds move1 = getMacroboardBounds(m1.mX, m1.mY);
         Bounds move2 = getMacroboardBounds(m2.mX, m2.mY);
@@ -61,12 +68,14 @@ public class BotStarter {
       
         for(i = b.x_min; i < b.x_max; i++) 
             for(j = b.y_min; j < b.y_max; j++) {
-                if(moves[i][j] == 1)
+                if(moves[i][j] == BotParser.mBotId)
                     count1++;
-                if(moves[i][j] == 2)
+                if(moves[i][j] == BotParser.hBotId)
                     count2++;
             } 
-        
+        //pentru a nu ma trimite intr=o casuta castigata 
+        if(f.isHisMicroboard(b.x_min+1,b.y_min+1) || f.isMyMicroboard(b.x_min+1,b.y_min+1))
+            return -100;
         return count1 - count2;
     }
     
@@ -81,7 +90,7 @@ public class BotStarter {
             m2=moves[i][b.y_min+1]; //casuta mijloc
             m3=moves[i][b.y_max-1]; //casuta dreapta
             
-            if((m1 == 1 && m2 == 1 && m3 == 0) || (m1 ==1 && m2 == 0 && m3 == 1) || (m1 == 0 && m2 == 1 && m3 == 1))
+            if((m1 == BotParser.mBotId && m2 == BotParser.mBotId && m3 == 0) || (m1 ==BotParser.mBotId && m2 == 0 && m3 == BotParser.mBotId) || (m1 == 0 && m2 == BotParser.mBotId && m3 == BotParser.mBotId))
                 return true;
         }
         //verific daca pot inchide pe coloane
@@ -90,19 +99,19 @@ public class BotStarter {
             m2=moves[b.x_min+1][j];//casuta mijloc
             m3=moves[b.x_max-1][j];//casuta jos
             
-            if((m1 == 1 && m2 == 1 && m3 == 0) || (m1 ==1 && m2 == 0 && m3 == 1) || (m1 == 0 && m2 == 1 && m3 == 1))
+            if((m1 == BotParser.mBotId && m2 == BotParser.mBotId && m3 == 0) || (m1 ==BotParser.mBotId && m2 == 0 && m3 == BotParser.mBotId) || (m1 == 0 && m2 == BotParser.mBotId && m3 == BotParser.mBotId))
                 return true;
         }
         //verific daca pot inchide pe diagonala principala
         m11=moves[b.x_min][b.y_min];
         m22=moves[b.x_min+1][b.y_min+1];
         m33=moves[b.x_max-1][b.y_max-1];
-        if((m11 == 1 && m22 == 1 && m33 == 0) || (m11 == 1 && m22 == 0 && m33 == 1) || (m11 == 0 && m22 == 1 && m33  == 1))
+        if((m11 == BotParser.mBotId && m22 == BotParser.mBotId && m33 == 0) || (m11 == BotParser.mBotId && m22 == 0 && m33 == BotParser.mBotId) || (m11 == 0 && m22 == BotParser.mBotId && m33  == BotParser.mBotId))
             return true;
         //verific daca pot inchide pe diagonala secundara
         m13=moves[b.x_min][b.y_max-1];
         m31=moves[b.x_max-1][b.y_min];    
-        if((m13 == 1 && m22 == 1 && m31 == 0) || (m13 == 1 && m22 == 0 && m31 == 1) || (m13 == 0 && m22 == 1 && m31  == 1))
+        if((m13 == BotParser.mBotId && m22 == BotParser.mBotId && m31 == 0) || (m13 == BotParser.mBotId && m22 == 0 && m31 == BotParser.mBotId) || (m13 == 0 && m22 == BotParser.mBotId && m31  == BotParser.mBotId))
             return true;
         
         return false;
@@ -116,13 +125,13 @@ public class BotStarter {
             m1=moves[b.x_min][y];//casuta sus
             m2=moves[b.x_min+1][y];//casuta mijloc
             m3=moves[b.x_max-1][y];//casuta jos
-            if(m1==2 && m2==2)
+            if(m1==BotParser.hBotId && m2==BotParser.hBotId)
                 if(m3==0)
                     return true;
-            if(m1==2 && m3==2)
+            if(m1==BotParser.hBotId && m3==BotParser.hBotId)
                 if(m2==0)
                     return true;
-            if (m3==2 && m2==2)
+            if (m3==BotParser.hBotId && m2==BotParser.hBotId)
                 if(m1==0)
                     return true;
         }
@@ -131,13 +140,13 @@ public class BotStarter {
             m1=moves[x][b.y_min]; // casuta stanga
             m2=moves[x][b.y_min+1]; //casuta mijloc
             m3=moves[x][b.y_max-1]; //casuta dreapta
-            if(m1==2 && m2==2)
+            if(m1==BotParser.hBotId && m2==BotParser.hBotId)
                 if(m3==0)
                     return true;
-            if(m1==2 && m3==2)
+            if(m1==BotParser.hBotId && m3==BotParser.hBotId)
                 if(m2==0)
                     return true;
-            if (m3==2 && m2==2)
+            if (m3==BotParser.hBotId && m2==BotParser.hBotId)
                 if(m1==0)
                     return true;
         }
@@ -146,22 +155,22 @@ public class BotStarter {
         m33=moves[b.x_max-1][b.y_max-1];
         m13=moves[b.x_min][b.y_max-1];
         m31=moves[b.x_max-1][b.y_min];
-        if(m11==2 && m22==2)
+        if(m11==BotParser.hBotId && m22==BotParser.hBotId)
             if(m33==0)
                 return true;
-        if(m11==2 && m33==2)
+        if(m11==BotParser.hBotId && m33==BotParser.hBotId)
             if(m22==0)
                 return true;
-        if(m22==2 && m33==2)
+        if(m22==BotParser.hBotId && m33==BotParser.hBotId)
             if(m11==0)
                 return true;
-        if(m31==2 && m13==2)
+        if(m31==BotParser.hBotId && m13==BotParser.hBotId)
             if(m22==0)
                 return true;
-        if(m22==2 && m13==2)
+        if(m22==BotParser.hBotId && m13==BotParser.hBotId)
             if(m31==0)
                 return true;
-        if(m31==2 && m22==2)
+        if(m31==BotParser.hBotId && m22==BotParser.hBotId)
             if(m13==0)
                 return true;
         return false;
@@ -211,7 +220,7 @@ public class BotStarter {
             m2=moves[b.x_min+1][y];//casuta mijloc
             m3=moves[b.x_max-1][y];//casuta jos
             //verific daca pot sa inchid macroboard-ul
-            if(m1==2 && m2==2)
+            if(m1==BotParser.hBotId && m2==BotParser.hBotId)
             {
                 if(m3==0)
                 {
@@ -222,7 +231,7 @@ public class BotStarter {
                             best=new Move(b.x_max-1,y);   
                 }
             }
-            if(m1==2 && m3==2)
+            if(m1==BotParser.hBotId && m3==BotParser.hBotId)
             {
                 if(m2==0)
                 {
@@ -233,7 +242,7 @@ public class BotStarter {
                             best=new Move(b.x_min+1,y);
                 }
             }
-            if (m3==2 && m2==2)
+            if (m3==BotParser.hBotId && m2==BotParser.hBotId)
             {
                 if(m1==0)
                 {
@@ -251,7 +260,7 @@ public class BotStarter {
             m2=moves[x][b.y_min+1]; //casuta mijloc
             m3=moves[x][b.y_max-1]; //casuta dreapta
             //verific daca pot sa inchid macroboard-ul
-            if(m1==2 && m2==2)
+            if(m1==BotParser.hBotId && m2==BotParser.hBotId)
             {
                 if(m3==0)
                 {
@@ -262,7 +271,7 @@ public class BotStarter {
                             best=new Move(x,b.y_max-1); 
                 }
             }
-            if(m1==2 && m3==2)
+            if(m1==BotParser.hBotId && m3==BotParser.hBotId)
             {
                 if(m2==0)
                 {
@@ -273,7 +282,7 @@ public class BotStarter {
                             best=new Move(x,b.y_min+1); 
                 }
             }
-            if (m3==2 && m2==2)
+            if (m3==BotParser.hBotId && m2==BotParser.hBotId)
             {
                 if(m1==0)
                 {
@@ -291,7 +300,7 @@ public class BotStarter {
         m13=moves[b.x_min][b.y_max-1];
         m31=moves[b.x_max-1][b.y_min];
         //verific daca pot sa inchid macroboard-ul
-        if(m11==2 && m22==2)
+        if(m11==BotParser.hBotId && m22==BotParser.hBotId)
         {
             if(m33==0)
             {
@@ -302,7 +311,7 @@ public class BotStarter {
                             best=new Move(b.x_max-1,b.y_max-1); 
             }
         }
-        if(m11==2 && m33==2)
+        if(m11==BotParser.hBotId && m33==BotParser.hBotId)
         {
             if(m22==0)
             {
@@ -313,7 +322,7 @@ public class BotStarter {
                             best=new Move(b.x_min+1,b.y_min+1); 
             }
         }
-        if(m22==2 && m33==2)
+        if(m22==BotParser.hBotId && m33==BotParser.hBotId)
         {
             if(m11==0)
             {
@@ -324,7 +333,7 @@ public class BotStarter {
                             best=new Move(b.x_min,b.y_min); 
             }
         }
-        if(m13==2 && m31==2)
+        if(m13==BotParser.hBotId && m31==BotParser.hBotId)
         {
             if(m22==0)
             {
@@ -335,7 +344,7 @@ public class BotStarter {
                             best=new Move(b.x_min+1,b.y_min+1); 
             }
         }
-        if(m13==2 && m22==2)
+        if(m13==BotParser.hBotId && m22==BotParser.hBotId)
         {
             if(m31==0)
             {
@@ -346,7 +355,7 @@ public class BotStarter {
                             best=new Move(b.x_max-1,b.y_min); 
             }
         }
-        if(m22==2 && m31==2)
+        if(m22==BotParser.hBotId && m31==BotParser.hBotId)
         {
             if(m13==0)
             {
@@ -373,7 +382,7 @@ public class BotStarter {
             m2=moves[b.x_min+1][y];//casuta mijloc
             m3=moves[b.x_max-1][y];//casuta jos
             //verific daca pot sa inchid macroboard-ul
-            if(m1==1 && m2==1)
+            if(m1==BotParser.mBotId && m2==BotParser.mBotId)
             {
                 if(m3==0)
                 {
@@ -384,7 +393,7 @@ public class BotStarter {
                             best=new Move(b.x_max-1,y);   
                 }
             }
-            if(m1==1 && m3==1)
+            if(m1==BotParser.mBotId && m3==BotParser.mBotId)
             {
                 if(m2==0)
                 {
@@ -395,7 +404,7 @@ public class BotStarter {
                             best=new Move(b.x_min+1,y);
                 }
             }
-            if (m3==1 && m2==1)
+            if (m3==BotParser.mBotId && m2==BotParser.mBotId)
             {
                 if(m1==0)
                 {
@@ -413,7 +422,7 @@ public class BotStarter {
             m2=moves[x][b.y_min+1]; //casuta mijloc
             m3=moves[x][b.y_max-1]; //casuta dreapta
             //verific daca pot sa inchid macroboard-ul
-            if(m1==1 && m2==1)
+            if(m1==BotParser.mBotId && m2==BotParser.mBotId)
             {
                 if(m3==0)
                 {
@@ -424,7 +433,7 @@ public class BotStarter {
                             best=new Move(x,b.y_max-1); 
                 }
             }
-            if(m1==1 && m3==1)
+            if(m1==BotParser.mBotId && m3==BotParser.mBotId)
             {
                 if(m2==0)
                 {
@@ -435,7 +444,7 @@ public class BotStarter {
                             best=new Move(x,b.y_min+1); 
                 }
             }
-            if (m3==1 && m2==1)
+            if (m3==BotParser.mBotId && m2==BotParser.mBotId)
             {
                 if(m1==0)
                 {
@@ -453,7 +462,7 @@ public class BotStarter {
         m13=moves[b.x_min][b.y_max-1];
         m31=moves[b.x_max-1][b.y_min];
         //verific daca pot sa inchid macroboard-ul
-        if(m11==1 && m22==1)
+        if(m11==BotParser.mBotId && m22==BotParser.mBotId)
         {
             if(m33==0)
             {
@@ -464,7 +473,7 @@ public class BotStarter {
                             best=new Move(b.x_max-1,b.y_max-1); 
             }
         }
-        if(m11==1 && m33==1)
+        if(m11==BotParser.mBotId && m33==BotParser.mBotId)
         {
             if(m22==0)
             {
@@ -475,7 +484,7 @@ public class BotStarter {
                             best=new Move(b.x_min+1,b.y_min+1); 
             }
         }
-        if(m22==1 && m33==1)
+        if(m22==BotParser.mBotId && m33==BotParser.mBotId)
         {
             if(m11==0)
             {
@@ -486,7 +495,7 @@ public class BotStarter {
                             best=new Move(b.x_min,b.y_min); 
             }
         }
-        if(m13==1 && m31==1)
+        if(m13==BotParser.mBotId && m31==BotParser.mBotId)
         {
             if(m22==0)
             {
@@ -497,7 +506,7 @@ public class BotStarter {
                             best=new Move(b.x_min+1,b.y_min+1); 
             }
         }
-        if(m13==1 && m22==1)
+        if(m13==BotParser.mBotId && m22==BotParser.mBotId)
         {
             if(m31==0)
             {
@@ -508,7 +517,7 @@ public class BotStarter {
                             best=new Move(b.x_max-1,b.y_min); 
             }
         }
-        if(m22==1 && m31==1)
+        if(m22==BotParser.mBotId && m31==BotParser.mBotId)
         {
             if(m13==0)
             {
@@ -547,13 +556,17 @@ public class BotStarter {
                 
                         if(moves[i][j] == 0)
                         {
-                            if(getEmpty(i, j) == 0) {
+                            /*if(getEmpty(i, j) == 0) {
+                                
+                                int k,l;
+                                for(k=0;k<3;k++)
+                                    for(l=0;l<3;l++)
+                                        System.out.println(empty[k][l]);
+                                setEmpty(getCadran(makeBounds(i, j)));
+                                return new Move(i, j);
+                             }  
                             
-                                 setEmpty(getCadran(makeBounds(i, j)));
-                                 move = new Move(i, j);
-                             }   
-                            
-                            else if(can_enemy_close(field, getMacroboardBounds(i, j))) {  // if he can win
+                            else */if(can_enemy_close(field, getMacroboardBounds(i, j))) {  // if he can win
                               // go on
                             } else {
                               
@@ -935,11 +948,11 @@ public class BotStarter {
                         if(moves[x][y]==0)
                             //Momentan o sa puna doar in cazul in care mai
                             //exista cadran liber
-                            if(getEmpty(x, y) == 0){
+                            /*if(getEmpty(x, y) == 0){
                                 
-                                setEmpty(getCadran(makeBounds(x, y)));
+                                setEmpty(getCadran(makeBounds(x, y)));*/
                                 return new Move(x,y);
-                            }
+                            
                 return move;
 	}
 
@@ -957,7 +970,7 @@ public class BotStarter {
                 
                 if((y >= 0) && (y <= 2))
                     b = new Bounds (0, 3 ,0, 3);
-                else if((y >=3) && (y <= 6))
+                else if((y >=3) && (y <= 5))
                     b = new Bounds(0 ,3, 3, 6);
                 else
                     b = new Bounds(0, 3, 6, 9);
@@ -966,7 +979,7 @@ public class BotStarter {
                 
                 if((y >= 0) && (y <= 2))
                     b = new Bounds (3, 6 ,0, 3);
-                else if((y >=3) && (y <= 6))
+                else if((y >=3) && (y <= 5))
                     b = new Bounds(3 ,6, 3, 6);
                 else
                     b = new Bounds(3, 6, 6, 9);
@@ -975,7 +988,7 @@ public class BotStarter {
                 
                 if((y >= 0) && (y <= 2))
                     b = new Bounds (6, 9 ,0, 3);
-                else if((y >=3) && (y <= 6))
+                else if((y >=3) && (y <= 5))
                     b = new Bounds(6 ,9, 3, 6);
                 else
                     b = new Bounds(6, 9, 6, 9);

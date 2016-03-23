@@ -117,13 +117,13 @@ public class Field {
         //verific daca microboard-ul ce contine pozitia (x,y) x<9 ,y<9 
         //este inchis de el
         public Boolean isHisMicroboard(int x, int y) {
-	    return mMacroboard[(int) x/3][(int) y/3] == 2;
+	    return mMacroboard[(int) x/3][(int) y/3] == BotParser.hBotId;
 	}
         
         //verific daca microboard-ul ce contine pozitia (x,y) x<9 , y<9 
         //este inchis de mine
         public Boolean isMyMicroboard(int x, int y) {
-	    return mMacroboard[(int) x/3][(int) y/3] == 1;
+	    return mMacroboard[(int) x/3][(int) y/3] == BotParser.mBotId;
 	}
 	
 	/**

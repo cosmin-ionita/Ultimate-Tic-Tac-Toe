@@ -34,6 +34,7 @@ public class BotParser {
 
 	private Field mField;
 	public static int mBotId = 0;
+        public static int hBotId = 0;
 
 	public BotParser(BotStarter bot) {
 		this.scan = new Scanner(System.in);
@@ -53,6 +54,10 @@ public class BotParser {
 			if(parts[0].equals("settings")) {
 				if (parts[1].equals("your_botid")) {
 					mBotId = Integer.parseInt(parts[2]);
+                                        if(mBotId==1)
+                                            hBotId=2;
+                                        else
+                                            hBotId=1;
 				}
 			} else if(parts[0].equals("update") && parts[1].equals("game")) { /* new game data */
 			    mField.parseGameData(parts[2], parts[3]);
