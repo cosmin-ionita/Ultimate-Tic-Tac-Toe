@@ -41,7 +41,7 @@ public class BotStarter {
      *
      * @return The column where the turn was made.
      */
-    
+    public int[][] empty = new int[3][3];
     
     public int dominance( Field f, Bounds b) {
         int[][] moves = f.getAvailableMoves();    
@@ -523,7 +523,13 @@ public class BotStarter {
                 for (int x = x_min; x < x_max; x++)
                     for (int y = y_min; y < y_max; y++)
                         if(moves[x][y]==0)
-                            return new Move(x,y);
+                            //Momentan o sa puna doar in cazul in care mai
+                            //exista cadran liber
+                            if(getEmpty(x, y) == 0){
+                                
+                                setEmpty(getCadran(makeBounds(x, y)));
+                                return new Move(x,y);
+                            }
                 return move;
 	}
 
@@ -532,5 +538,118 @@ public class BotStarter {
 		BotParser parser = new BotParser(new BotStarter());
 		parser.run();
 	}
+        
+        //Afla cadranul actual in care ne aflam
+        public Bounds makeBounds(int x, int y){
+            
+            Bounds b = null;
+            if((x >= 0) && (x <= 2)){
+                
+                if((y >= 0) && (y <= 2))
+                    b = new Bounds (0, 3 ,0, 3);
+                else if((y >=3) && (y <= 6))
+                    b = new Bounds(0 ,3, 3, 6);
+                else
+                    b = new Bounds(0, 3, 6, 9);
+            }
+            if((x >= 3) && (x <= 5)){
+                
+                if((y >= 0) && (y <= 2))
+                    b = new Bounds (3, 6 ,0, 3);
+                else if((y >=3) && (y <= 6))
+                    b = new Bounds(3 ,6, 3, 6);
+                else
+                    b = new Bounds(3, 6, 6, 9);
+            }
+            if((x >= 6) && (x <= 8)){
+                
+                if((y >= 0) && (y <= 2))
+                    b = new Bounds (6, 9 ,0, 3);
+                else if((y >=3) && (y <= 6))
+                    b = new Bounds(6 ,9, 3, 6);
+                else
+                    b = new Bounds(6, 9, 6, 9);
+            }
+           return b;
+        }
+        
+        //Infunctie de Bounds returneaza numarul cadranului (intre 0 si 8)
+        public int getCadran(Bounds b){
+            
+            if(b.x_min == 0){
+                if(b.y_min == 0)
+                    return 0;
+                if(b.y_min == 3)
+                    return 1;
+                else
+                    return 2;
+            }
+            if(b.x_min == 3){
+                if(b.y_min == 0)
+                    return 3;
+                if(b.y_min == 3)
+                    return 4;
+                else
+                    return 5;
+            }
+            if(b.x_min == 6){
+                
+                if(b.y_min == 0)
+                    return 6;
+                if(b.y_min == 3)
+                    return 7;
+                else
+                    return 8;
+            }
+            return 0;
+        }
+        
+        //Seteaza 1 pe pozitia cadranului in care am introdus o noua valoare
+        public void setEmpty(int pos){
+            
+            if(pos == 0)
+                empty[0][0] = 1;
+            if(pos == 1)
+                empty[0][1] = 1;
+            if(pos == 2)
+                empty[0][2] = 1;
+            if(pos == 3)
+                empty[1][0] = 1;
+            if(pos == 4)
+                empty[1][1] = 1;
+            if(pos == 5)
+                empty[1][2] = 1;
+            if(pos == 6)
+                empty[2][0] = 1;
+            if(pos == 7)
+                empty[2][1] = 1;
+            if(pos == 8)
+                empty [2][2] = 1;
+        }
+        
+        //Returneaza daca cadranul in care vrem sa punem este liber sau nu
+        public int getEmpty(int x, int y){
+            
+            int pos = getCadran(makeBounds(x,y));
+            int val = 0;
+            if(pos == 0)
+                val = empty[0][0];
+            if(pos == 1)
+                val = empty[0][1];
+            if(pos == 2)
+                val = empty[0][2];
+            if(pos == 3)
+                val = empty[1][0];
+            if(pos == 4)
+                val = empty[1][1];
+            if(pos == 5)
+                val = empty[1][2];
+            if(pos == 6)
+                val = empty[2][0];
+            if(pos == 7)
+                val = empty[2][1];
+            if(pos == 8)
+                val = empty[2][2];
+            return val;
+        }
 }
-
