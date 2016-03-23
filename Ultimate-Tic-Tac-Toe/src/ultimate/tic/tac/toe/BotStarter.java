@@ -41,6 +41,8 @@ public class BotStarter {
      *
      * @return The column where the turn was made.
      */
+    
+    
     public int dominance( Field f, Bounds b) {
         int[][] moves = f.getAvailableMoves();    
         int i,j, count1 = 0, count2 = 0;
@@ -54,6 +56,44 @@ public class BotStarter {
             } 
         
         return count1 - count2;
+    }
+    
+    boolean can_we_close(Field f, Bounds b) {
+        int[][] moves = f.getAvailableMoves();
+        int i,j;
+        int m1,m2,m3,m11,m22,m33,m13,m31;
+        
+        //verific daca pot inchide pe linii
+        for(i = b.x_min; i < b.x_max; i++) {
+            m1=moves[i][b.y_min]; // casuta stanga
+            m2=moves[i][b.y_min+1]; //casuta mijloc
+            m3=moves[i][b.y_max-1]; //casuta dreapta
+            
+            if((m1 == 1 && m2 == 1 && m3 == 0) || (m1 ==1 && m2 == 0 && m3 == 1) || (m1 == 0 && m2 == 1 && m3 == 1))
+                return true;
+        }
+        //verific daca pot inchide pe coloane
+        for(j = b.y_min; j < b.y_max; j++) {
+            m1=moves[b.x_min][j];//casuta sus
+            m2=moves[b.x_min+1][j];//casuta mijloc
+            m3=moves[b.x_max-1][j];//casuta jos
+            
+            if((m1 == 1 && m2 == 1 && m3 == 0) || (m1 ==1 && m2 == 0 && m3 == 1) || (m1 == 0 && m2 == 1 && m3 == 1))
+                return true;
+        }
+        //verific daca pot inchide pe diagonala principala
+        m11=moves[b.x_min][b.y_min];
+        m22=moves[b.x_min+1][b.y_min+1];
+        m33=moves[b.x_max-1][b.y_max-1];
+        if((m11 == 1 && m22 == 1 && m33 == 0) || (m11 == 1 && m22 == 0 && m33 == 1) || (m11 == 0 && m22 == 1 && m33  == 1))
+            return true;
+        //verific daca pot inchide pe diagonala secundara
+        m13=moves[b.x_min][b.y_max-1];
+        m31=moves[b.x_max-1][b.y_min];    
+        if((m13 == 1 && m22 == 1 && m31 == 0) || (m13 == 1 && m22 == 0 && m31 == 1) || (m13 == 0 && m22 == 1 && m31  == 1))
+            return true;
+        
+        return false;
     }
 
     public Move calculate(int[][] moves,int x_min,int x_max,int y_min,int y_max)
