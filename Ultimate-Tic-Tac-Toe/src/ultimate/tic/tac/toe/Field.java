@@ -100,13 +100,30 @@ public class Field {
 			}
 		}
 	}
-
+        
+        //returnez tabela mare 9x9 ce contine 0 daca e o casuta 
+        //ce nu e completata inca, 1 daca e o casuta ocupata de noi si 2
+        //daca e o casuta ocupata de el
 	public int[][] getAvailableMoves() {
 		return mBoard;
 	}
 	
+        //verific daca microboard-ul ce contine pozitia (x,y) x<9,y<9
+        //se poate juca in runda curenta
 	public Boolean isInActiveMicroboard(int x, int y) {
 	    return mMacroboard[(int) x/3][(int) y/3] == -1;
+	}
+        
+        //verific daca microboard-ul ce contine pozitia (x,y) x<9 ,y<9 
+        //este inchis de el
+        public Boolean isHisMicroboard(int x, int y) {
+	    return mMacroboard[(int) x/3][(int) y/3] == 2;
+	}
+        
+        //verific daca microboard-ul ce contine pozitia (x,y) x<9 , y<9 
+        //este inchis de mine
+        public Boolean isMyMicroboard(int x, int y) {
+	    return mMacroboard[(int) x/3][(int) y/3] == 1;
 	}
 	
 	/**

@@ -46,20 +46,14 @@ public class BotStarter {
         Move move;
         int m1,m2,m3,m11,m22,m33,m31,m13;
         move=null;
+        //parcurgere pe coloane a macroboard-ului
         for (int y = y_min; y < y_max; y++) 
         {
-            m1=moves[x_min][y];
-            m2=moves[x_min+1][y];
-            m3=moves[x_max-1][y];
+            m1=moves[x_min][y];//casuta sus
+            m2=moves[x_min+1][y];//casuta mijloc
+            m3=moves[x_max-1][y];//casuta jos
+            //verific daca pot sa inchid macroboard-ul
             if(m1==1 && m2==1)
-            {
-                if(m3==0)
-                {
-                    move=new Move(x_max-1,y);
-                    break;
-                }
-            }
-            if(m1==2 && m2==2)
             {
                 if(m3==0)
                 {
@@ -75,19 +69,29 @@ public class BotStarter {
                     break;
                 }
             }
-            if(m1==2 && m3==2)
-            {
-                if(m2==0)
-                {
-                    move=new Move(x_min+1,y);
-                    break;
-                }
-            }
             if (m3==1 && m2==1)
             {
                 if(m1==0)
                 {
                     move=new Move(x_min,y);
+                    break;
+                }
+            }
+            //daca nu am putut sa il inchid verific daca adversarul este la 
+            //o mutare decisiva distanta de a inchida macroboard-ul si il blochez
+            if(m1==2 && m2==2)
+            {
+                if(m3==0)
+                {
+                    move=new Move(x_max-1,y);
+                    break;
+                }
+            }
+            if(m1==2 && m3==2)
+            {
+                if(m2==0)
+                {
+                    move=new Move(x_min+1,y);
                     break;
                 }
             }
@@ -100,22 +104,17 @@ public class BotStarter {
                 }
             }
         }
+        //daca nu am gasit o mutare decisiva pe coloane
         if(move==null)
         {
+            //parcurg pe linii macroboard-ul
             for (int x = x_min; x < x_max; x++) 
             {
-                m1=moves[x][y_min];
-                m2=moves[x][y_min+1];
-                m3=moves[x][y_max-1];
+                m1=moves[x][y_min]; // casuta stanga
+                m2=moves[x][y_min+1]; //casuta mijloc
+                m3=moves[x][y_max-1]; //casuta dreapta
+                //verific daca pot sa inchid macroboard-ul
                 if(m1==1 && m2==1)
-                {
-                    if(m3==0)
-                    {
-                        move=new Move(x,y_max-1);
-                        break;
-                    }
-                }
-                if(m1==2 && m2==2)
                 {
                     if(m3==0)
                     {
@@ -131,19 +130,29 @@ public class BotStarter {
                         break;
                     }
                 }
-                if(m1==2 && m3==2)
-                {
-                    if(m2==0)
-                    {
-                        move=new Move(x,y_min+1);
-                        break;
-                    }
-                }
                 if (m3==1 && m2==1)
                 {
                     if(m1==0)
                     {
                         move=new Move(x,y_min);
+                        break;
+                    }
+                }
+                //daca nu am putut sa il inchid verific daca adversarul este la 
+                //o mutare decisiva distanta de a inchida macroboard-ul si il blochez
+                if(m1==2 && m2==2)
+                {
+                    if(m3==0)
+                    {
+                        move=new Move(x,y_max-1);
+                        break;
+                    }
+                }
+                if(m1==2 && m3==2)
+                {
+                    if(m2==0)
+                    {
+                        move=new Move(x,y_min+1);
                         break;
                     }
                 }
@@ -157,6 +166,7 @@ public class BotStarter {
                 }
             }
         }
+        // daca nici pe linii nu am gasit o mutare decisiva verific diagonalele
         if(move==null)
         {
             m11=moves[x_min][y_min];
@@ -164,12 +174,8 @@ public class BotStarter {
             m33=moves[x_max-1][y_max-1];
             m13=moves[x_min][y_max-1];
             m31=moves[x_max-1][y_min];
+            //verific daca pot sa inchid macroboard-ul
             if(m11==1 && m22==1)
-            {
-                if(m33==0)
-                    return new Move(x_max-1,y_max-1);
-            }
-            if(m11==2 && m22==2)
             {
                 if(m33==0)
                     return new Move(x_max-1,y_max-1);
@@ -179,17 +185,7 @@ public class BotStarter {
                 if(m22==0)
                     return new Move(x_min+1,y_min+1);
             }
-            if(m11==2 && m33==2)
-            {
-                if(m22==0)
-                    return new Move(x_min+1,y_min+1);
-            }
             if(m22==1 && m33==1)
-            {
-                if(m11==0)
-                    return new Move(x_min,y_min);
-            }
-            if(m22==2 && m33==2)
             {
                 if(m11==0)
                     return new Move(x_min,y_min);
@@ -199,17 +195,7 @@ public class BotStarter {
                 if(m22==0)
                     return new Move(x_min+1,y_min+1);
             }
-            if(m31==2 && m13==2)
-            {
-                if(m22==0)
-                    return new Move(x_min+1,y_min+1);
-            }
             if(m13==1 && m22==1)
-            {
-                if(m31==0)
-                    return new Move(x_max-1,y_min);
-            }
-            if(m22==2 && m13==2)
             {
                 if(m31==0)
                     return new Move(x_max-1,y_min);
@@ -219,118 +205,176 @@ public class BotStarter {
                 if(m13==0)
                     return new Move(x_min,y_max-1);
             }
+            //daca nu am putut sa il inchid verific daca adversarul este la 
+            //o mutare decisiva distanta de a inchida macroboard-ul si il blochez
+            if(m11==2 && m22==2)
+            {
+                if(m33==0)
+                    return new Move(x_max-1,y_max-1);
+            }
+            if(m11==2 && m33==2)
+            {
+                if(m22==0)
+                    return new Move(x_min+1,y_min+1);
+            }
+            if(m22==2 && m33==2)
+            {
+                if(m11==0)
+                    return new Move(x_min,y_min);
+            }
+            if(m31==2 && m13==2)
+            {
+                if(m22==0)
+                    return new Move(x_min+1,y_min+1);
+            }
+            if(m22==2 && m13==2)
+            {
+                if(m31==0)
+                    return new Move(x_max-1,y_min);
+            }
             if(m31==2 && m22==2)
             {
                 if(m13==0)
                     return new Move(x_min,y_max-1);
             }
         }
+        //daca nu am gasit nimic decisiv in macroboard returnez null
         return move; 
     }
 	public Move makeTurn(Field field) {
+                //returneaza tabela 9x9 cu mutari de la runda curenta
 		int[][] moves = field.getAvailableMoves();
                 Move move;
                 move=null;
                 int y_min=0,y_max=3,x_min=0,x_max=3;
+                //verifica daca macroboard-ul activ este stanga sus
                 if(field.isInActiveMicroboard(1, 1))
                 {
                     System.out.println("1");
+                    //stabilesc limitele macroboard-ului in tabela mare
                     x_min=0;
                     x_max=3;
                     y_min=0;
                     y_max=3;
+                    //incerc sa gasesc o mutare decisiva in macroboard
                     move=this.calculate(moves,x_min,x_max,y_min,y_max);
                     if(move!=null)
                         return move;
                 }
+                //verifica daca macroboard-ul activ este mijloc sus
                 if(field.isInActiveMicroboard(1, 4))
                 {
                     System.out.println("2");
+                    //stabilesc limitele macroboard-ului in tabela mare
                     x_min=0;
                     x_max=3;
                     y_min=3;
                     y_max=6;
+                    //incerc sa gasesc o mutare decisiva in macroboard
                     move=this.calculate(moves,x_min,x_max,y_min,y_max);
                     if(move!=null)
                         return move;
                 }
+                //verifica daca macroboard-ul activ este dreapta sus
                 if(field.isInActiveMicroboard(1, 7))
                 {
                     System.out.println("3");
+                    //stabilesc limitele macroboard-ului in tabela mare
                     x_min=0;
                     x_max=3;
                     y_min=6;
                     y_max=9;
+                    //incerc sa gasesc o mutare decisiva in macroboard
                     move=this.calculate(moves,x_min,x_max,y_min,y_max);
                     if(move!=null)
                         return move;
                 }
+                //verifica daca macroboard-ul activ este mijloc stanga
                 if(field.isInActiveMicroboard(4, 1))
                 {
                     System.out.println("4");
+                    //stabilesc limitele macroboard-ului in tabela mare
                     x_min=3;
                     x_max=6;
                     y_min=0;
                     y_max=3;
+                    //incerc sa gasesc o mutare decisiva in macroboard
                     move=this.calculate(moves,x_min,x_max,y_min,y_max);
                     if(move!=null)
                         return move;
                 }
+                //verifica daca macroboard-ul activ este mijloc mijloc
                 if(field.isInActiveMicroboard(4, 4))
                 {
                     System.out.println("5");
+                    //stabilesc limitele macroboard-ului in tabela mare
                     x_min=3;
                     x_max=6;
                     y_min=3;
                     y_max=6;
+                    //incerc sa gasesc o mutare decisiva in macroboard
                     move=this.calculate(moves,x_min,x_max,y_min,y_max);
                     if(move!=null)
                         return move;
                 }
+                //verifica daca macroboard-ul activ este mijloc dreapta
                 if(field.isInActiveMicroboard(4, 7))
                 {
                     System.out.println("6");
+                    //stabilesc limitele macroboard-ului in tabela mare
                     x_min=3;
                     x_max=6;
                     y_min=6;
                     y_max=9;
+                    //incerc sa gasesc o mutare decisiva in macroboard
                     move=this.calculate(moves,x_min,x_max,y_min,y_max);
                     if(move!=null)
                         return move;
                 }
+                //verifica daca macroboard-ul activ este stanga jos
                 if(field.isInActiveMicroboard(7, 1))
                 {
                     System.out.println("7");
+                    //stabilesc limitele macroboard-ului in tabela mare
                     x_min=6;
                     x_max=9;
                     y_min=0;
                     y_max=3;
+                    //incerc sa gasesc o mutare decisiva in macroboard
                     move=this.calculate(moves,x_min,x_max,y_min,y_max);
                     if(move!=null)
                         return move;
                 }
+                //verifica daca macroboard-ul activ este mijloc jos
                 if(field.isInActiveMicroboard(7, 4))
                 {
                     System.out.println("8");
+                    //stabilesc limitele macroboard-ului in tabela mare
                     x_min=6;
                     x_max=9;
                     y_min=3;
                     y_max=6;
+                    //incerc sa gasesc o mutare decisiva in macroboard
                     move=this.calculate(moves,x_min,x_max,y_min,y_max);
                     if(move!=null)
                         return move;
                 }
+                //verifica daca macroboard-ul activ este drepta jos
                 if(field.isInActiveMicroboard(7, 7))
                 {
                     System.out.println("9");
+                    //stabilesc limitele macroboard-ului in tabela mare
                     x_min=6;
                     x_max=9;
                     y_min=6;
                     y_max=9;
+                    //incerc sa gasesc o mutare decisiva in macroboard
                     move=this.calculate(moves,x_min,x_max,y_min,y_max);
                     if(move!=null)
                         return move;
                 }
+                //daca nu am gasit nicio mutare decisiva pun prima mutare 
+                //valabila din ultimul macroboard activ gasit
                 for (int x = x_min; x < x_max; x++)
                     for (int y = y_min; y < y_max; y++)
                         if(moves[x][y]==0)
