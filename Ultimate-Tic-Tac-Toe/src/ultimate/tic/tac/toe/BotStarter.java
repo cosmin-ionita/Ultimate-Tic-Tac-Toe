@@ -43,6 +43,18 @@ public class BotStarter {
      */
     public int[][] empty = new int[3][3];
     
+    public boolean checkifbetter(Move m1, Move m2, Field f, Bounds b) {
+        Bounds move1 = getMacroboardBounds(m1.mX, m1.mY);
+        Bounds move2 = getMacroboardBounds(m2.mX, m2.mY);
+        
+        if(dominance(f,move1) > dominance(f,move2)) {
+            if(can_enemy_close(f,move1))
+                return false;
+            return true;
+        }
+        return false;
+    }
+    
     public int dominance( Field f, Bounds b) {
         int[][] moves = f.getAvailableMoves();    
         int i,j, count1 = 0, count2 = 0;
