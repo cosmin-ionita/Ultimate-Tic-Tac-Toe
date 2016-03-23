@@ -95,6 +95,96 @@ public class BotStarter {
         
         return false;
     }
+    public boolean can_enemy_close(Field field,Bounds b)
+    {
+        int[][] moves = field.getAvailableMoves();
+        int m1,m2,m3,m11,m22,m33,m31,m13;
+        for (int y = b.y_min; y < b.y_max; y++) 
+        {
+            m1=moves[b.x_min][y];//casuta sus
+            m2=moves[b.x_min+1][y];//casuta mijloc
+            m3=moves[b.x_max-1][y];//casuta jos
+            if(m1==2 && m2==2)
+                if(m3==0)
+                    return true;
+            if(m1==2 && m3==2)
+                if(m2==0)
+                    return true;
+            if (m3==2 && m2==2)
+                if(m1==0)
+                    return true;
+        }
+        for (int x = b.x_min; x < b.x_max; x++) 
+        {
+            m1=moves[x][b.y_min]; // casuta stanga
+            m2=moves[x][b.y_min+1]; //casuta mijloc
+            m3=moves[x][b.y_max-1]; //casuta dreapta
+            if(m1==2 && m2==2)
+                if(m3==0)
+                    return true;
+            if(m1==2 && m3==2)
+                if(m2==0)
+                    return true;
+            if (m3==2 && m2==2)
+                if(m1==0)
+                    return true;
+        }
+        m11=moves[b.x_min][b.y_min];
+        m22=moves[b.x_min+1][b.y_min+1];
+        m33=moves[b.x_max-1][b.y_max-1];
+        m13=moves[b.x_min][b.y_max-1];
+        m31=moves[b.x_max-1][b.y_min];
+        if(m11==2 && m22==2)
+            if(m33==0)
+                return true;
+        if(m11==2 && m33==2)
+            if(m22==0)
+                return true;
+        if(m22==2 && m33==2)
+            if(m11==0)
+                return true;
+        if(m31==2 && m13==2)
+            if(m22==0)
+                return true;
+        if(m22==2 && m13==2)
+            if(m31==0)
+                return true;
+        if(m31==2 && m22==2)
+            if(m13==0)
+                return true;
+        return false;
+    }
+    public Bounds getMacroboardBounds(int x,int y)
+    {
+        if(x==0 || x==3 || x==6)
+        {
+            if(y==0 || y==3 || y==6)
+                return new Bounds(0,3,0,3);
+            if(y==1 || y==4 || y==7)
+                return new Bounds(0,3,3,6);
+            if(y==2 || y==5 || y==8)
+                return new Bounds(0,3,6,9);
+        }
+        if(x==1 || x==4 || x==7)
+        {
+            if(y==0 || y==3 || y==6)
+                return new Bounds(3,6,0,3);
+            if(y==1 || y==4 || y==7)
+                return new Bounds(3,6,3,6);
+            if(y==2 || y==5 || y==8)
+                return new Bounds(3,6,6,9);
+        }
+        if(x==2 || x==5 || x==8)
+        {
+            if(y==0 || y==3 || y==6)
+                return new Bounds(6,9,0,3);
+            if(y==1 || y==4 || y==7)
+                return new Bounds(6,9,3,6);
+            if(y==2 || y==5 || y==8)
+                return new Bounds(6,9,6,9);
+        }
+        return new Bounds();
+    }
 
     public Move calculate(int[][] moves,int x_min,int x_max,int y_min,int y_max)
     {
