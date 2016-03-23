@@ -41,6 +41,21 @@ public class BotStarter {
      *
      * @return The column where the turn was made.
      */
+    public int dominance( Field f, Bounds b) {
+        int[][] moves = f.getAvailableMoves();    
+        int i,j, count1 = 0, count2 = 0;
+      
+        for(i = b.x_min; i < b.x_max; i++) 
+            for(j = b.y_min; j < b.y_max; j++) {
+                if(moves[i][j] == 1)
+                    count1++;
+                if(moves[i][j] == 2)
+                    count2++;
+            } 
+        
+        return count1 - count2;
+    }
+
     public Move calculate(int[][] moves,int x_min,int x_max,int y_min,int y_max)
     {
         Move move;
