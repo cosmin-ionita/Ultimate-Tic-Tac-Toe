@@ -50,6 +50,64 @@ public class BotStarter {
             for(j=0;j<3;j++)
                 empty[i][j]=0;
     }
+    
+    //Returneaza primul cadran in care nu exista nicio valoarea, si putem sa ne ducem acolo, conditia 
+    //cu f.isInActiveMicroboard este pusa pentru a nu il trimite in cadranul in care noi trebuie sa mutam acum.
+    // Bounds actual sunt coordonatele cadranului in care noi trebuie sa punem.
+    public Bounds getEmptyCell(Field f, Bounds actual){
+        
+        int[][] moves = f.getAvailableMoves();
+        Bounds b = new Bounds(0, 3, 0, 3);
+        if((checkEmptyCadran(moves,b) == true) && (f.isInActiveMicroboard(0,0) == false) && (moves[actual.x_min][actual.y_min] == 0))
+            return b;
+        b = new Bounds(0, 3, 3, 6);
+        if((checkEmptyCadran(moves,b) == true) && (f.isInActiveMicroboard(0,4) == false) && (moves[actual.x_min][actual.y_min + 1] == 0))
+            return b;
+        b = new Bounds(0, 3, 6, 9);
+        if((checkEmptyCadran(moves,b) == true) && (f.isInActiveMicroboard(0,8) == false) && (moves[actual.x_min][actual.y_min + 2] == 0))
+            return b;
+        b = new Bounds(3, 6, 0, 3);
+        if((checkEmptyCadran(moves,b) == true) && (f.isInActiveMicroboard(4,0) == false) && (moves[actual.x_min + 1][actual.y_min] == 0))
+            return b;
+        b = new Bounds(3, 6, 3, 6);
+        if((checkEmptyCadran(moves,b) == true) && (f.isInActiveMicroboard(4,4) == false) && (moves[actual.x_min + 1][actual.y_min + 1] == 0))
+            return b;
+        b = new Bounds(3, 6, 6, 9);
+        if((checkEmptyCadran(moves,b) == true) && (f.isInActiveMicroboard(4,8) == false) && (moves[actual.x_min + 1][actual.y_min + 2] == 0))
+            return b;
+        b = new Bounds(6, 9, 0, 3);
+        if((checkEmptyCadran(moves,b) == true) && (f.isInActiveMicroboard(7,0) == false) && (moves[actual.x_min + 2][actual.y_min] == 0))
+            return b;
+        b = new Bounds(6, 9, 3, 6);
+        if((checkEmptyCadran(moves,b) == true) && (f.isInActiveMicroboard(7,4) == false) && (moves[actual.x_min + 2][actual.y_min + 1] == 0))
+            return b;
+        b = new Bounds(6, 9, 6, 9);
+        if((checkEmptyCadran(moves,b) == true) && (f.isInActiveMicroboard(7,8) == false) && (moves[actual.x_min + 2][actual.y_min + 2] == 0))
+            return b;
+        return null;
+    }
+    
+    //Verifica daca Cadranul este liber
+    public boolean checkEmptyCadran(int[][] moves, Bounds b){
+        for(int i = b.x_min; i < b.x_max; i++)
+            for(int j = b.y_min; j < b.y_max; j++){
+                
+                if(moves[i][j] != 0)
+                    return false;
+            }
+        return true;
+    }
+    
+    //Verifica daca matricea empty mai are cadrane libere
+    public boolean isFull(){
+        
+        for(int i = 0; i < 3; i++)
+            for(int j = 0; j < 3; j++)
+                if(empty[i][j] == 0)
+                    return true;
+        return false;  
+    }
+    
     public boolean checkifbetter(Move m1, Move m2, Field f) {
         Bounds move1 = getMacroboardBounds(m1.mX, m1.mY);
         Bounds move2 = getMacroboardBounds(m2.mX, m2.mY);
