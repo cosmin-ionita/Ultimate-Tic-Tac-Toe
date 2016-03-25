@@ -51,6 +51,28 @@ public class BotStarter {
                 empty[i][j]=0;
     }
     
+    //Verifica daca noi incepem jocul(tabla goala) sau adversarul.
+    public boolean checkFirstMove(Field f){
+        
+       int[][] moves = f.getAvailableMoves();
+       for(int i = 0; i < 9; i++)
+           for(int j = 0; j < 9; j++)
+               if(moves[i][j] != 0)
+                   return false;
+       return true;
+    }
+    
+   //Daca noi incepem jocul, muta in coltul stanga sus al tablei din mijloc, altfel
+    //alegea cea mai buna mutare.
+    public Move makeFirstMove(Field f){
+        Move next;
+        if(checkFirstMove(f) == true)
+            next = new Move(3,3);
+        else
+            next = makeTurn(f);
+        return next;
+    }
+        
     //Returneaza primul cadran in care nu exista nicio valoarea, si putem sa ne ducem acolo, conditia 
     //cu f.isInActiveMicroboard este pusa pentru a nu il trimite in cadranul in care noi trebuie sa mutam acum.
     // Bounds actual sunt coordonatele cadranului in care noi trebuie sa punem.
