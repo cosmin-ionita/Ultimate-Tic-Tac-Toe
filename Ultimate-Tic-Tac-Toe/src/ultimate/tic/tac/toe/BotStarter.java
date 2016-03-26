@@ -22,6 +22,7 @@ package ultimate.tic.tac.toe;
 //    For the full copyright and license information, please view the LICENSE
 //    file that was distributed with this source code.
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -41,6 +42,13 @@ public class BotStarter {
      *
      * @return The column where the turn was made.
      */
+    
+    
+    /** Conventie de nume: microBoard = casuta mica de dimensiune 3 x 3
+     *                     macroBoard = field-ul jocului, de dimensiune 9 x 9
+     * 
+     */
+    
     public int[][] empty;
     
     private void initializeEmptyArray() {
@@ -144,25 +152,25 @@ public class BotStarter {
         return false;
     }
     
-    /* Verifica daca mutarea m1 este mai avantajoasa decat mutarea m2,
-       prin algerea mutarii care trimite adversarul intr-o casuta unde
-       avem noi dominanta mare. Evident, inainte sa il trimitem acolo,
-       verificam daca adeversarul ne poate inchide in casuta respectiva.
+  
+    /* Verifica daca mutarea M1 este mai buna decat mutarea M2 prin analiza
+       dominantei pe care o avem in microBoard-urile corespunzatoare.
     */
-    
-    public boolean checkifbetter(Move m1, Move m2, Field f) {
-        Bounds move1 = getMacroboardBounds(m1.mX, m1.mY);
-        Bounds move2 = getMacroboardBounds(m2.mX, m2.mY);
+    public boolean checkIfBetter(Move m1, Move m2, Field f) {
         
-        if(dominance(f,move1) > dominance(f,move2)) {
-            if(can_enemy_close(f,move1))
+        Bounds microBoard_m1 = getMacroboardBounds(m1.mX, m1.mY);
+        Bounds microBoard_m2 = getMacroboardBounds(m2.mX, m2.mY);
+        
+        if(dominance(f,microBoard_m1) > dominance(f,microBoard_m2)) {
+            if(can_enemy_close(f,microBoard_m1))
                 return false;
             return true;
         }
         return false;
     }
     
-    public int dominance( Field f, Bounds b) {
+    public int dominance(Field f, Bounds b) {
+        
         int[][] moves = f.getAvailableMoves();
         int i,j, count1 = 0, count2 = 0;
         
@@ -189,22 +197,46 @@ public class BotStarter {
                 (x == 0 && y == BotParser.mBotId && z == BotParser.mBotId));
     }
     
-    boolean can_we_close(Field f, Bounds b) {
+    boolean canEnemyCloseTheLine(int x, int y, int z) {
         
+        return ((x == BotParser.hBotId && y == BotParser.hBotId && z == 0) || 
+                (x == BotParser.hBotId && y == 0 && z == BotParser.hBotId) || 
+                (x == 0 && y == BotParser.hBotId && z == BotParser.hBotId));
+    }
+    
+    
+    
+    // Intoarce mutarile de inchidere pe care le avem in microBoard-ul curent, pentru
+    // o alege pe cea mai buna dintre ele. Daca NU putem inchide microBoard-ul curent
+    // vom intoarce null
+    
+    List<Move> getCloseMoves(Field f, Bounds b) {
+        
+        // Lista de mutari de inchidere pe care le avem
+        List<Move> closeMoves = new ArrayList<Move>();
+                
         int[][] moves = f.getAvailableMoves();
         int i,j;
         int m1,m2,m3,m11,m22,m33,m13,m31;
+        
+        int emptyCellY = -1; // retine Y-ul celulei libere
+        int emptyCellX = -1; // retine X-ul celulei libere
         
         //verific daca pot inchide pe linii
         
         for(i = b.x_min; i < b.x_max; i++) {
             
-            m1=moves[i][b.y_min]; // casuta stanga
-            m2=moves[i][b.y_min+1]; //casuta mijloc
-            m3=moves[i][b.y_max-1]; //casuta dreapta
+            m1 = moves[i][b.y_min]; // casuta stanga
+            emptyCellY = (m1 == 0) ? b.y_min : -1;
+                
+            m2 = moves[i][b.y_min + 1]; //casuta mijloc
+            emptyCellY = (m2 == 0) ? b.y_min : -1;
+            
+            m3 = moves[i][b.y_max - 1]; //casuta dreapta
+            emptyCellY = (m3 == 0) ? b.y_min : -1;
             
             if(canWeCloseTheLine(m1, m2, m3))
-                return true;
+                closeMoves.add(new Move(i, emptyCellY));
         }
         
         //verific daca pot inchide pe coloane
@@ -212,36 +244,156 @@ public class BotStarter {
         for(j = b.y_min; j < b.y_max; j++) {
             
             m1=moves[b.x_min][j];//casuta sus
+            emptyCellX = (m1 == 0) ? b.x_min : -1;
+            
             m2=moves[b.x_min+1][j];//casuta mijloc
+            emptyCellX = (m2 == 0) ? b.x_min + 1 : -1;
+            
             m3=moves[b.x_max-1][j];//casuta jos
+            emptyCellX = (m3 == 0) ? b.x_max - 1 : -1;
             
             if(canWeCloseTheLine(m1, m2, m3))
-                return true;
+                closeMoves.add(new Move(emptyCellX, j));
         }
         
         //verific daca pot inchide pe diagonala principala
         
         m11=moves[b.x_min][b.y_min];
-        m22=moves[b.x_min+1][b.y_min+1];
-        m33=moves[b.x_max-1][b.y_max-1];
+        emptyCellX = (m11 == 0) ? b.x_min : -1;
+        emptyCellY = (m11 == 0) ? b.y_min : -1;
+        
+        m22=moves[b.x_min + 1][b.y_min + 1];
+        emptyCellX = (m22 == 0) ? b.x_min + 1 : -1;
+        emptyCellY = (m22 == 0) ? b.y_min + 1 : -1;
+        
+        m33=moves[b.x_max - 1][b.y_max - 1];
+        emptyCellX = (m33 == 0) ? b.x_max - 1 : -1;
+        emptyCellY = (m33 == 0) ? b.y_max - 1 : -1;
         
         if(canWeCloseTheLine(m11, m22, m33))
-            return true;
+            closeMoves.add(new Move(emptyCellX, emptyCellY));
         
         
         //verific daca pot inchide pe diagonala secundara
         
-        m13=moves[b.x_min][b.y_max-1];
-        m31=moves[b.x_max-1][b.y_min];
+        m13=moves[b.x_min][b.y_max - 1];
+        emptyCellX = (m13 == 0) ? b.x_min : -1;
+        emptyCellY = (m13 == 0) ? b.y_max - 1 : -1;
+        
+        m22=moves[b.x_min + 1][b.y_min + 1];
+        emptyCellX = (m22 == 0) ? b.x_min + 1 : -1;
+        emptyCellY = (m22 == 0) ? b.y_min + 1 : -1;
+        
+        
+        m31=moves[b.x_max - 1][b.y_min];
+        emptyCellX = (m31 == 0) ? b.x_max - 1 : -1;
+        emptyCellY = (m31 == 0) ? b.y_min : -1;
         
         if(canWeCloseTheLine(m13, m22, m31))
-            return true;
+            closeMoves.add(new Move(emptyCellX, emptyCellY));
         
         // daca nu am putut inchide nicio linie (diagonala)
-        return false;
+        if(closeMoves.isEmpty())
+            return null;
+        
+        return closeMoves;
     }
     
-    public boolean can_enemy_close(Field field,Bounds b)
+    
+    // Intoarce mutarile de inchidere pe care le are adversarul.
+    // Functia este identica cu cea de mai sus in care facem acelasi lucru
+    // pentru noi.
+    
+    List<Move> getEnemyCloseMoves(Field f, Bounds b) {
+        
+        // Lista de mutari de inchidere pe care le are adversarul
+        List<Move> enemyCloseMoves = new ArrayList<Move>();
+                
+        int[][] moves = f.getAvailableMoves();
+        int i,j;
+        int m1,m2,m3,m11,m22,m33,m13,m31;
+        
+        int emptyCellY = -1; // retine Y-ul celulei libere
+        int emptyCellX = -1; // retine X-ul celulei libere
+        
+        //verific daca adversarul poate inchide pe linii
+        
+        for(i = b.x_min; i < b.x_max; i++) {
+            
+            m1 = moves[i][b.y_min]; // casuta stanga
+            emptyCellY = (m1 == 0) ? b.y_min : -1;
+                
+            m2 = moves[i][b.y_min + 1]; //casuta mijloc
+            emptyCellY = (m2 == 0) ? b.y_min : -1;
+            
+            m3 = moves[i][b.y_max - 1]; //casuta dreapta
+            emptyCellY = (m3 == 0) ? b.y_min : -1;
+            
+            if(canEnemyCloseTheLine(m1, m2, m3))
+                enemyCloseMoves.add(new Move(i, emptyCellY));
+        }
+        
+        //verific daca adversarul poate inchide pe coloane
+        
+        for(j = b.y_min; j < b.y_max; j++) {
+            
+            m1=moves[b.x_min][j];//casuta sus
+            emptyCellX = (m1 == 0) ? b.x_min : -1;
+            
+            m2=moves[b.x_min+1][j];//casuta mijloc
+            emptyCellX = (m2 == 0) ? b.x_min + 1 : -1;
+            
+            m3=moves[b.x_max-1][j];//casuta jos
+            emptyCellX = (m3 == 0) ? b.x_max - 1 : -1;
+            
+            if(canEnemyCloseTheLine(m1, m2, m3))
+                enemyCloseMoves.add(new Move(emptyCellX, j));
+        }
+        
+        //verific daca adversarul poate inchide pe diagonala principala
+        
+        m11=moves[b.x_min][b.y_min];
+        emptyCellX = (m11 == 0) ? b.x_min : -1;
+        emptyCellY = (m11 == 0) ? b.y_min : -1;
+        
+        m22=moves[b.x_min + 1][b.y_min + 1];
+        emptyCellX = (m22 == 0) ? b.x_min + 1 : -1;
+        emptyCellY = (m22 == 0) ? b.y_min + 1 : -1;
+        
+        m33=moves[b.x_max - 1][b.y_max - 1];
+        emptyCellX = (m33 == 0) ? b.x_max - 1 : -1;
+        emptyCellY = (m33 == 0) ? b.y_max - 1 : -1;
+        
+        if(canEnemyCloseTheLine(m11, m22, m33))
+            enemyCloseMoves.add(new Move(emptyCellX, emptyCellY));
+        
+        
+        //verific daca adversarul poate inchide pe diagonala secundara
+        
+        m13=moves[b.x_min][b.y_max - 1];
+        emptyCellX = (m13 == 0) ? b.x_min : -1;
+        emptyCellY = (m13 == 0) ? b.y_max - 1 : -1;
+        
+        m22=moves[b.x_min + 1][b.y_min + 1];
+        emptyCellX = (m22 == 0) ? b.x_min + 1 : -1;
+        emptyCellY = (m22 == 0) ? b.y_min + 1 : -1;
+        
+        
+        m31=moves[b.x_max - 1][b.y_min];
+        emptyCellX = (m31 == 0) ? b.x_max - 1 : -1;
+        emptyCellY = (m31 == 0) ? b.y_min : -1;
+        
+        if(canEnemyCloseTheLine(m13, m22, m31))
+            enemyCloseMoves.add(new Move(emptyCellX, emptyCellY));
+        
+        // daca adversarul nu a putut inchide nicio linie (diagonala)
+        if(enemyCloseMoves.isEmpty())
+            return null;
+        
+        return enemyCloseMoves;
+    }
+    
+    /*public boolean can_enemy_close(Field field,Bounds b)
     {
         int[][] moves = field.getAvailableMoves();
         int m1,m2,m3,m11,m22,m33,m31,m13;
@@ -302,7 +454,7 @@ public class BotStarter {
             if(m13==0)
                 return true;
         return false;
-    }
+    }*/
     
     public Bounds getMacroboardBounds(int x,int y)
     {
@@ -336,7 +488,7 @@ public class BotStarter {
         return new Bounds();
     }
     
-    public Move get_best_block_move(Field field,Bounds b)
+    /*public Move get_best_block_move(Field field,Bounds b)
     {
         int[][] moves = field.getAvailableMoves();
         int m1,m2,m3,m11,m22,m33,m31,m13;
@@ -497,21 +649,24 @@ public class BotStarter {
             }
         }
         return best;
-    }
+    }*/
     
-    public Move get_best_move_to_win(Field field,Bounds b)
+    /*public Move get_best_move_to_win(Field field, Bounds b)
     {
         int[][] moves = field.getAvailableMoves();
         int m1,m2,m3,m11,m22,m33,m31,m13;
+        
         Move move,best;
         move=null;
         best=null;
+        
         //parcurgere pe coloane a macroboard-ului
         for (int y = b.y_min; y < b.y_max; y++)
         {
             m1=moves[b.x_min][y];//casuta sus
             m2=moves[b.x_min+1][y];//casuta mijloc
             m3=moves[b.x_max-1][y];//casuta jos
+            
             //verific daca pot sa inchid macroboard-ul
             if(m1==BotParser.mBotId && m2==BotParser.mBotId)
             {
@@ -659,6 +814,37 @@ public class BotStarter {
                         best=new Move(b.x_min,b.y_max-1);
             }
         }
+        
+        return best;
+    }*/
+    
+    private Move getBestMoveToWin(List<Move> closeMoves, Field field) {
+        
+        Move best = closeMoves.get(0);
+        
+        for(int i = 1; i < closeMoves.size(); i++) {
+            if(checkIfBetter(closeMoves.get(i), best, field))
+                best = closeMoves.get(i);
+        }
+        
+        
+        // Aici intoarcem mutarea care trimite adversarul in microBoard-ul
+        // in care noi avem dominanta maxima.
+        
+        return best;
+    }
+    
+    // DUPLICATE CODE
+    
+    private Move getBestBlockMove(List<Move> closeMoves, Field field) {
+        
+        Move best = closeMoves.get(0);
+        
+        for(int i = 1; i < closeMoves.size(); i++) {
+            if(checkIfBetter(closeMoves.get(i), best, field))
+                best = closeMoves.get(i);
+        }
+        
         return best;
     }
     
@@ -667,16 +853,27 @@ public class BotStarter {
         Move move = null;
         int[][] moves = field.getAvailableMoves();
         
+        
         Bounds best_next_move = null;
         
+        // Obtinem lista de mutari de inchidere pe care le avem
+        List<Move> closeMoves = getCloseMoves(field, position);
         
-        if(can_we_close(field, position)) {
+        if(closeMoves != null)
+            return getBestMoveToWin(closeMoves, field); // returneaza mutarea de inchidere cea mai buna
+        
+        /*if(canWeClose(field, position)) {
             return get_best_move_to_win(field, position); // returneaza mutarea de inchidere cea mai buna
-        }
+        }*/
         
-        else if(can_enemy_close(field, position)) {
+        closeMoves = getEnemyCloseMoves(field, position);
+        
+        if(closeMoves != null)
+            return getBestBlockMove(closeMoves, field);
+        
+        /*else if(can_enemy_close(field, position)) {
             return get_best_block_move(field, position);
-        }
+        }*/
         
         else {
             for(int i = position.x_min; i<position.x_max; i++)
