@@ -346,7 +346,7 @@ public class BotStarter {
             emptyCellX = (m3 == -1) ? 2 : emptyCellX;
             
             if(canWeFinalClose(m1, m2, m3)) {
-                closeMoves.add(makeBounds(emptyCellX * 3, i * 3));
+                closeMoves.add(makeBounds(i * 3, emptyCellX * 3));
             }
         }
         
@@ -364,7 +364,7 @@ public class BotStarter {
             emptyCellY = (m3 == -1) ? 2 : emptyCellY;
             
             if(canWeFinalClose(m1, m2, m3)) {
-                closeMoves.add(makeBounds(i * 3, emptyCellY * 3));
+                closeMoves.add(makeBounds(emptyCellY * 3, i * 3));
             }
         }
         
@@ -392,7 +392,7 @@ public class BotStarter {
         emptyCellX = (m13 == -1) ? 0 : emptyCellX;
         emptyCellY = (m13 == -1) ? 2 : emptyCellY;
         
-        m22 = macroBoard[2][2];
+        m22 = macroBoard[1][1];
         emptyCellX = (m22 == -1) ? 1 : emptyCellX;
         emptyCellY = (m22 == -1) ? 1 : emptyCellY;
         
@@ -663,77 +663,90 @@ public class BotStarter {
         if(field.entireBoardAvailable()) {  // daca am la dispozitie tot field-ul
             
             
-            // Layer_1 -> daca pot castiga jocul
+            // Layer_1 -> (default) -> inchid prima casuta care poate fi inchisa
             
-            List<Bounds> finalMoves = getFinalCloseMoves(field.getMacroBoard());    // caut patratelele pentru care
-                                                                                    // am deja doua in linie cu ele
-
-            if(finalMoves != null) {
+            List<Move> closeMoves = null;
+            
+            if(field.isInActiveMicroboard(1, 1)) {
                 
-                for(int i = 0; i < finalMoves.size(); i++) {    // verific daca pot inchide acele patratele
-                    
-                    List<Move> closeMoves = getCloseMoves(field, finalMoves.get(i));
-                    
-                    if(closeMoves != null) {
-                        return getBestMoveToWin(closeMoves, field);
-                    }
+                closeMoves = getCloseMoves(field, makeBounds(1, 1));
+                
+                if(closeMoves != null) {
+                    return getBestMoveToWin(closeMoves, field);
                 }
             }
             
-            // Layer_2 -> (default) -> inchid prima casuta care poate fi inchisa
-            
-            List<Move> closeMoves = getCloseMoves(field, makeBounds(1, 1));
-            
-            if(closeMoves != null) {
-                return getBestMoveToWin(closeMoves, field);
+            if(field.isInActiveMicroboard(1, 4)) {
+                
+                closeMoves = getCloseMoves(field, makeBounds(1, 4));
+                
+                if(closeMoves != null) {
+                    return getBestMoveToWin(closeMoves, field);
+                }
             }
             
-            closeMoves = getCloseMoves(field, makeBounds(1, 4));
-            
-            if(closeMoves != null) {
-                return getBestMoveToWin(closeMoves, field);
+            if(field.isInActiveMicroboard(1, 7)) {
+                
+                closeMoves = getCloseMoves(field, makeBounds(1, 7));
+                
+                if(closeMoves != null) {
+                    return getBestMoveToWin(closeMoves, field);
+                }
             }
             
-            closeMoves = getCloseMoves(field, makeBounds(1, 7));
-            
-            if(closeMoves != null) {
-                return getBestMoveToWin(closeMoves, field);
+            if(field.isInActiveMicroboard(4, 1)) {
+                
+                closeMoves = getCloseMoves(field, makeBounds(4, 1));
+                
+                if(closeMoves != null) {
+                    return getBestMoveToWin(closeMoves, field);
+                }
             }
             
-            closeMoves = getCloseMoves(field, makeBounds(4, 1));
-            
-            if(closeMoves != null) {
-                return getBestMoveToWin(closeMoves, field);
+            if(field.isInActiveMicroboard(4, 4)) {
+                
+                closeMoves = getCloseMoves(field, makeBounds(4, 4));
+                
+                if(closeMoves != null) {
+                    return getBestMoveToWin(closeMoves, field);
+                }
             }
             
-            closeMoves = getCloseMoves(field, makeBounds(4, 4));
-            
-            if(closeMoves != null) {
-                return getBestMoveToWin(closeMoves, field);
+            if(field.isInActiveMicroboard(4, 7)) {
+                
+                closeMoves = getCloseMoves(field, makeBounds(4, 7));
+                
+                if(closeMoves != null) {
+                    return getBestMoveToWin(closeMoves, field);
+                }
             }
             
-            closeMoves = getCloseMoves(field, makeBounds(4, 7));
-            
-            if(closeMoves != null) {
-                return getBestMoveToWin(closeMoves, field);
+            if(field.isInActiveMicroboard(7, 1)) {
+                
+                closeMoves = getCloseMoves(field, makeBounds(7, 1));
+                
+                if(closeMoves != null) {
+                    return getBestMoveToWin(closeMoves, field);
+                }
             }
             
-            closeMoves = getCloseMoves(field, makeBounds(7, 1));
-            
-            if(closeMoves != null) {
-                return getBestMoveToWin(closeMoves, field);
+            if(field.isInActiveMicroboard(7, 4)) {
+                
+                closeMoves = getCloseMoves(field, makeBounds(7, 4));
+                
+                if(closeMoves != null) {
+                    return getBestMoveToWin(closeMoves, field);
+                }
             }
             
-            closeMoves = getCloseMoves(field, makeBounds(7, 4));
-            
-            if(closeMoves != null) {
-                return getBestMoveToWin(closeMoves, field);
-            }
-            
-            closeMoves = getCloseMoves(field, makeBounds(7, 7));
-            
-            if(closeMoves != null) {
-                return getBestMoveToWin(closeMoves, field);
+            if(field.isInActiveMicroboard(7, 7)) {
+                
+                closeMoves = getCloseMoves(field, makeBounds(7, 7));
+                
+                if(closeMoves != null) {
+                    return getBestMoveToWin(closeMoves, field);
+                }
+                
             }
             
             // Layer_3 -> daca nu a intrat pe nicio situatie, iau prima pozitie
@@ -741,7 +754,7 @@ public class BotStarter {
             
             for(int i = 0; i < 9; i++) {
                 for(int j = 0; j < 9; j++) {
-                    if(moves[i][j] == 0)
+                    if(moves[i][j] == 0 && field.isInActiveMicroboard(i, j))
                         return new Move(i, j);
                 }
             }
