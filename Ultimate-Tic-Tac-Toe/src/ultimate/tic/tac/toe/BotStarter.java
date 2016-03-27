@@ -92,20 +92,31 @@ public class BotStarter {
         return next;
     }
     
-    //Returneaza primul cadran in care nu exista nicio valoarea, si putem sa ne ducem acolo, conditia
-    //cu f.isInActiveMicroboard este pusa pentru a nu il trimite in cadranul in care noi trebuie sa mutam acum.
+    // Returneaza primul cadran in care nu exista nicio valoarea, si putem sa ne ducem acolo, conditia
+    // cu f.isInActiveMicroboard este pusa pentru a nu il trimite in cadranul in care noi trebuie sa mutam acum.
     // Bounds actual sunt coordonatele cadranului in care noi trebuie sa punem.
     public Bounds getEmptyCell(Field f, Bounds actual){
         
         int[][] moves = f.getAvailableMoves();
+        
         Bounds b = new Bounds(0, 3, 0, 3);
         
-        if((checkEmptyCadran(moves,b) == true) && (f.isInActiveMicroboard(0,0) == false) && (moves[actual.x_min][actual.y_min] == 0))
+        if((checkEmptyCadran(moves,b) == true) && 
+           (f.isInActiveMicroboard(0,0) == false) && 
+           (moves[actual.x_min][actual.y_min] == 0))
+            
             return b;
+        
         b = new Bounds(0, 3, 3, 6);
-        if((checkEmptyCadran(moves,b) == true) && (f.isInActiveMicroboard(0,4) == false) && (moves[actual.x_min][actual.y_min + 1] == 0))
+        
+        if((checkEmptyCadran(moves,b) == true) && 
+           (f.isInActiveMicroboard(0,4) == false) && 
+           (moves[actual.x_min][actual.y_min + 1] == 0))
+            
             return b;
+        
         b = new Bounds(0, 3, 6, 9);
+        
         if((checkEmptyCadran(moves,b) == true) && (f.isInActiveMicroboard(0,8) == false) && (moves[actual.x_min][actual.y_min + 2] == 0))
             return b;
         b = new Bounds(3, 6, 0, 3);
@@ -143,7 +154,7 @@ public class BotStarter {
     }
     
     //Verifica daca matricea empty mai are cadrane libere
-    public boolean isFull(){
+    public boolean areEmptyCells(){
         
         for(int i = 0; i < 3; i++)
             for(int j = 0; j < 3; j++)
@@ -161,11 +172,14 @@ public class BotStarter {
         Bounds microBoard_m1 = getMacroboardBounds(m1.mX, m1.mY);
         Bounds microBoard_m2 = getMacroboardBounds(m2.mX, m2.mY);
         
-        if(dominance(f,microBoard_m1) > dominance(f,microBoard_m2)) {
-            if(can_enemy_close(f,microBoard_m1))
+        if(dominance(f, microBoard_m1) > dominance(f, microBoard_m2)) {
+            
+            if(getEnemyCloseMoves(f, microBoard_m1) != null)
                 return false;
+            
             return true;
         }
+        
         return false;
     }
     
@@ -854,7 +868,7 @@ public class BotStarter {
         int[][] moves = field.getAvailableMoves();
         
         
-        Bounds best_next_move = null;
+        Bounds bestNextMove = null;
         
         // Obtinem lista de mutari de inchidere pe care le avem
         List<Move> closeMoves = getCloseMoves(field, position);
@@ -862,54 +876,56 @@ public class BotStarter {
         if(closeMoves != null)
             return getBestMoveToWin(closeMoves, field); // returneaza mutarea de inchidere cea mai buna
         
-        /*if(canWeClose(field, position)) {
-            return get_best_move_to_win(field, position); // returneaza mutarea de inchidere cea mai buna
-        }*/
-        
         closeMoves = getEnemyCloseMoves(field, position);
         
         if(closeMoves != null)
-            return getBestBlockMove(closeMoves, field);
+            return getBestBlockMove(closeMoves, field); // returneaza mutarea de blocare cea mai buna
         
-        /*else if(can_enemy_close(field, position)) {
-            return get_best_block_move(field, position);
-        }*/
         
-        else {
-            for(int i = position.x_min; i<position.x_max; i++)
+        // Daca sunt trimis intr-un microBoard gol, atunci actualizez empty-ul
+        
+        if(checkEmptyCadran(moves, position)) {
+            setEmpty(getCadran(position));
+        }
+        
+     
+        for(int i = position.x_min; i<position.x_max; i++)
+        {
+            for(int j = position.y_min; j<position.y_max; j++)
             {
-                
-                for(int j = position.y_min; j<position.y_max; j++)
+                if(moves[i][j] == 0)
                 {
-                    
-                    if(moves[i][j] == 0)
-                    {
-                        /*if(getEmpty(i, j) == 0) {
+                    if(areEmptyCells()) {   // daca sunt microBoard-uri goale pe tabla de joc
                         
-                        int k,l;
-                        for(k=0;k<3;k++)
-                        for(l=0;l<3;l++)
-                        System.out.println(empty[k][l]);
-                        setEmpty(getCadran(makeBounds(i, j)));
-                        return new Move(i, j);
+                        if(getEmptyByBounds(getMacroboardBounds(i, j)) == 0) {   // daca il trimit intr-un microBoard gol
+                            
+                            setEmpty(getCadran(getMacroboardBounds(i, j)));     // update pentru adversar
+                            
+                            return new Move(i, j);
                         }
                         
-                        else */if(can_enemy_close(field, getMacroboardBounds(i, j))) {  // if he can win
-                            // go on
+                        // Daca apare aici o problema
+                        
+                        System.out.println("Problem on Empty Cells");
+                        
+                        return new Move(i, j);
+                    }
+                    else {
+                    
+                       if(getEnemyCloseMoves(field, getMacroboardBounds(i, j)) != null) {
+                           ;
                         } else {
                             
-                            if(best_next_move != null) {
-                                if(dominance(field, best_next_move) < dominance(field, getMacroboardBounds(i, j))) {
+                            if(bestNextMove != null) {
+                                if(dominance(field, bestNextMove) < dominance(field, getMacroboardBounds(i, j))) {
                                     
-                                    best_next_move = getMacroboardBounds(i, j);
-                                    
+                                    bestNextMove = getMacroboardBounds(i, j);
                                     move = new Move(i, j);
                                 }
                             }
                             else {
                                 
-                                best_next_move = getMacroboardBounds(i, j);
-                                
+                                bestNextMove = getMacroboardBounds(i, j);
                                 move = new Move(i, j);
                             }
                         }
@@ -918,19 +934,19 @@ public class BotStarter {
                     }
                 }
             }
-            
-            if(best_next_move == null) {
-                for (int x = position.x_min; x < position.x_max; x++)
-                    for (int y = position.y_min; y < position.y_max; y++) {
-                        
-                        if(moves[x][y] == 0) {
-                            move = new Move(x, y);
-                            break;
-                        }
-                    }
-            }
         }
-        
+            
+        if(bestNextMove == null) {
+            for (int x = position.x_min; x < position.x_max; x++)
+                for (int y = position.y_min; y < position.y_max; y++) {
+                        
+                    if(moves[x][y] == 0) {
+                        move = new Move(x, y);
+                        break;
+                    }
+                }
+        }
+
         return move;
     }
     
@@ -942,6 +958,14 @@ public class BotStarter {
         int[][] moves = field.getAvailableMoves();
         
         int y_min=0,y_max=3,x_min=0,x_max=3;
+        
+        if(field.atTheBeginning()) {
+            
+            setEmpty(getCadran(makeBounds(3, 3)));
+            setEmpty(getCadran(makeBounds(0, 0)));
+            
+            return new Move(3, 3);  // pozitia de start
+        }
         
         //verifica daca macroboard-ul activ este stanga sus
         if(field.isInActiveMicroboard(1, 1))
@@ -1076,10 +1100,9 @@ public class BotStarter {
         //daca nu am gasit nicio mutare decisiva pun prima mutare
         //valabila din ultimul macroboard activ gasit
         
-        
         for (int x = x_min; x < x_max; x++)
             for (int y = y_min; y < y_max; y++)
-                if(moves[x][y]==0)
+                if(moves[x][y] == 0)
                     //Momentan o sa puna doar in cazul in care mai
                     //exista cadran liber
                     /*if(getEmpty(x, y) == 0){
@@ -1130,7 +1153,7 @@ public class BotStarter {
         return b;
     }
     
-    //Infunctie de Bounds returneaza numarul cadranului (intre 0 si 8)
+    //In functie de Bounds returneaza numarul cadranului (intre 0 si 8)
     public int getCadran(Bounds b){
         
         if(b.x_min == 0){
@@ -1141,6 +1164,7 @@ public class BotStarter {
             else
                 return 2;
         }
+        
         if(b.x_min == 3){
             if(b.y_min == 0)
                 return 3;
@@ -1149,6 +1173,7 @@ public class BotStarter {
             else
                 return 5;
         }
+        
         if(b.x_min == 6){
             
             if(b.y_min == 0)
@@ -1158,6 +1183,7 @@ public class BotStarter {
             else
                 return 8;
         }
+        
         return 0;
     }
     
@@ -1181,7 +1207,7 @@ public class BotStarter {
         if(pos == 7)
             empty[2][1] = 1;
         if(pos == 8)
-            empty [2][2] = 1;
+            empty[2][2] = 1;
     }
     
     //Returneaza daca cadranul in care vrem sa punem este liber sau nu
@@ -1189,6 +1215,34 @@ public class BotStarter {
         
         int pos = getCadran(makeBounds(x,y));
         int val = 0;
+        
+        if(pos == 0)
+            val = empty[0][0];
+        if(pos == 1)
+            val = empty[0][1];
+        if(pos == 2)
+            val = empty[0][2];
+        if(pos == 3)
+            val = empty[1][0];
+        if(pos == 4)
+            val = empty[1][1];
+        if(pos == 5)
+            val = empty[1][2];
+        if(pos == 6)
+            val = empty[2][0];
+        if(pos == 7)
+            val = empty[2][1];
+        if(pos == 8)
+            val = empty[2][2];
+        return val;
+    }
+    
+    
+    public int getEmptyByBounds(Bounds bounds){
+        
+        int pos = getCadran(bounds);
+        int val = 0;
+        
         if(pos == 0)
             val = empty[0][0];
         if(pos == 1)
