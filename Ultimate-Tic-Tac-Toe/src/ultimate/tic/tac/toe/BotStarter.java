@@ -1103,11 +1103,7 @@ public class BotStarter {
         for (int x = x_min; x < x_max; x++)
             for (int y = y_min; y < y_max; y++)
                 if(moves[x][y] == 0)
-                    //Momentan o sa puna doar in cazul in care mai
-                    //exista cadran liber
-                    /*if(getEmpty(x, y) == 0){
                     
-                    setEmpty(getCadran(makeBounds(x, y)));*/
                     return new Move(x,y);
         
         return move;
