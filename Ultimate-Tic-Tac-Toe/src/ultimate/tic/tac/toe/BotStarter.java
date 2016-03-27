@@ -49,15 +49,19 @@ public class BotStarter {
      *
      */
     
-    public int[][] empty;
+    private int[][] empty;
+    
+    // Aceasta matrice de 3 x 3 are 1 daca microBoard-ul corespunzator
+    // din field-ul mare are cel putin o piesa plasata pe el, sau 0 daca
+    // respectivul microBoard este complet gol.
     
     private void initializeEmptyArray() {
         
-        empty=new int[3][3];
+        empty = new int[3][3];
         
-        for(int i=0; i<3; i++)
-            for(int j=0; j<3; j++)
-                empty[i][j]=0;
+        for(int i = 0; i < 3; i++)
+            for(int j = 0; j < 3; j++)
+                empty[i][j] = 0;
     }
     
     public BotStarter()
@@ -65,82 +69,8 @@ public class BotStarter {
         initializeEmptyArray();
     }
     
-    //Verifica daca noi incepem jocul(tabla goala) sau adversarul.
-    public boolean checkFirstMove(Field f){
-        
-        int[][] moves = f.getAvailableMoves();
-        
-        for(int i = 0; i < 9; i++)
-            for(int j = 0; j < 9; j++)
-                if(moves[i][j] != 0)
-                    return false;
-        
-        return true;
-    }
     
-    //Daca noi incepem jocul, muta in coltul stanga sus al tablei din mijloc, altfel
-    //alegea cea mai buna mutare.
-    public Move makeFirstMove(Field f){
-        
-        Move next;
-        
-        if(checkFirstMove(f) == true)
-            next = new Move(3,3);
-        else
-            next = makeTurn(f);
-        
-        return next;
-    }
-    
-    // Returneaza primul cadran in care nu exista nicio valoarea, si putem sa ne ducem acolo, conditia
-    // cu f.isInActiveMicroboard este pusa pentru a nu il trimite in cadranul in care noi trebuie sa mutam acum.
-    // Bounds actual sunt coordonatele cadranului in care noi trebuie sa punem.
-    public Bounds getEmptyCell(Field f, Bounds actual){
-        
-        int[][] moves = f.getAvailableMoves();
-        
-        Bounds b = new Bounds(0, 3, 0, 3);
-        
-        if((checkEmptyCadran(moves,b) == true) &&
-                (f.isInActiveMicroboard(0,0) == false) &&
-                (moves[actual.x_min][actual.y_min] == 0))
-            
-            return b;
-        
-        b = new Bounds(0, 3, 3, 6);
-        
-        if((checkEmptyCadran(moves,b) == true) &&
-                (f.isInActiveMicroboard(0,4) == false) &&
-                (moves[actual.x_min][actual.y_min + 1] == 0))
-            
-            return b;
-        
-        b = new Bounds(0, 3, 6, 9);
-        
-        if((checkEmptyCadran(moves,b) == true) && (f.isInActiveMicroboard(0,8) == false) && (moves[actual.x_min][actual.y_min + 2] == 0))
-            return b;
-        b = new Bounds(3, 6, 0, 3);
-        if((checkEmptyCadran(moves,b) == true) && (f.isInActiveMicroboard(4,0) == false) && (moves[actual.x_min + 1][actual.y_min] == 0))
-            return b;
-        b = new Bounds(3, 6, 3, 6);
-        if((checkEmptyCadran(moves,b) == true) && (f.isInActiveMicroboard(4,4) == false) && (moves[actual.x_min + 1][actual.y_min + 1] == 0))
-            return b;
-        b = new Bounds(3, 6, 6, 9);
-        if((checkEmptyCadran(moves,b) == true) && (f.isInActiveMicroboard(4,8) == false) && (moves[actual.x_min + 1][actual.y_min + 2] == 0))
-            return b;
-        b = new Bounds(6, 9, 0, 3);
-        if((checkEmptyCadran(moves,b) == true) && (f.isInActiveMicroboard(7,0) == false) && (moves[actual.x_min + 2][actual.y_min] == 0))
-            return b;
-        b = new Bounds(6, 9, 3, 6);
-        if((checkEmptyCadran(moves,b) == true) && (f.isInActiveMicroboard(7,4) == false) && (moves[actual.x_min + 2][actual.y_min + 1] == 0))
-            return b;
-        b = new Bounds(6, 9, 6, 9);
-        if((checkEmptyCadran(moves,b) == true) && (f.isInActiveMicroboard(7,8) == false) && (moves[actual.x_min + 2][actual.y_min + 2] == 0))
-            return b;
-        return null;
-    }
-    
-    //Verifica daca Cadranul este liber
+    //Verifica daca microBoard-ul dat prin limitele sale (bonuds) este liber
     public boolean checkEmptyCadran(int[][] moves, Bounds b){
         
         for(int i = b.x_min; i < b.x_max; i++)
@@ -153,7 +83,7 @@ public class BotStarter {
         return true;
     }
     
-    //Verifica daca matricea empty mai are cadrane libere
+    //Verifica daca mai sunt microBoard-uri libere
     public boolean areEmptyCells(){
         
         for(int i = 0; i < 3; i++)
@@ -164,9 +94,9 @@ public class BotStarter {
     }
     
     
-    /* Verifica daca mutarea M1 este mai buna decat mutarea M2 prin analiza
-    dominantei pe care o avem in microBoard-urile corespunzatoare.
-    */
+    //  Verifica daca mutarea M1 este mai buna decat mutarea M2 prin analiza
+    //  dominantei pe care o avem in microBoard-urile corespunzatoare.
+    
     public boolean checkIfBetter(Move m1, Move m2, Field f) {
         
         Bounds microBoard_m1 = getMacroboardBounds(m1.mX, m1.mY);
@@ -195,9 +125,11 @@ public class BotStarter {
                 if(moves[i][j] == BotParser.hBotId)
                     count2++;
             }
+        
         //pentru a nu ma trimite intr=o casuta castigata
         if(f.isHisMicroboard(b.x_min+1,b.y_min+1) || f.isMyMicroboard(b.x_min+1,b.y_min+1))
             return -100;
+        
         return count1 - count2;
     }
     
@@ -217,8 +149,6 @@ public class BotStarter {
                 (x == BotParser.hBotId && y == 0 && z == BotParser.hBotId) ||
                 (x == 0 && y == BotParser.hBotId && z == BotParser.hBotId));
     }
-    
-    
     
     // Intoarce mutarile de inchidere pe care le avem in microBoard-ul curent, pentru
     // o alege pe cea mai buna dintre ele. Daca NU putem inchide microBoard-ul curent
@@ -287,8 +217,7 @@ public class BotStarter {
         if(canWeCloseTheLine(m11, m22, m33))
             closeMoves.add(new Move(emptyCellX, emptyCellY));
         
-        
-        //verific daca pot inchide pe diagonala secundara
+        //Verificam daca putem inchide pe diagonala secundara
         
         m13=moves[b.x_min][b.y_max - 1];
         emptyCellX = (m13 == 0) ? b.x_min : emptyCellX;
@@ -305,105 +234,7 @@ public class BotStarter {
         if(canWeCloseTheLine(m13, m22, m31))
             closeMoves.add(new Move(emptyCellX, emptyCellY));
         
-        // daca nu am putut inchide nicio linie (diagonala)
-        if(closeMoves.isEmpty())
-            return null;
-        
-        return closeMoves;
-    }
-    
-    
-    private boolean canWeFinalClose(int x, int y, int z) {
-        
-        return ((x == BotParser.mBotId && y == BotParser.mBotId && z == -1) ||
-                (x == BotParser.mBotId && y == -1 && z == BotParser.mBotId) ||
-                (x == -1 && y == BotParser.mBotId && z == BotParser.mBotId));
-    }
-    
-    // Intoarce lista de microBoard-uri care corespund unei inchideri decisive
-    // din partea noastra.
-    
-    List<Bounds> getFinalCloseMoves(int[][] macroBoard) {
-        
-        // Lista de mutari de inchidere pe care le avem
-        List<Bounds> closeMoves = new ArrayList<Bounds>();
-        
-        int m1, m2, m3, m11, m22, m33, m13, m31;
-        
-        int emptyCellX = -1, emptyCellY = -1;
-        
-        //verific daca pot inchide pe linii
-        
-        for(int i = 0; i<3; i++) {
-            
-            m1 = macroBoard[i][0];          // casuta stanga
-            emptyCellX = (m1 == -1) ? 0 : emptyCellX;
-            
-            m2 = macroBoard[i][1];          //casuta mijloc
-            emptyCellX = (m2 == -1) ? 1 : emptyCellX;
-            
-            m3 = macroBoard[i][2];          //casuta dreapta
-            emptyCellX = (m3 == -1) ? 2 : emptyCellX;
-            
-            if(canWeFinalClose(m1, m2, m3)) {
-                closeMoves.add(makeBounds(i * 3, emptyCellX * 3));
-            }
-        }
-        
-        //verific daca pot inchide pe coloane
-        
-        for(int i = 0; i<3; i++) {
-            
-            m1 = macroBoard[0][i];          // casuta stanga
-            emptyCellY = (m1 == -1) ? 0 : emptyCellY;
-            
-            m2 = macroBoard[1][i];          //casuta mijloc
-            emptyCellY = (m2 == -1) ? 1 : emptyCellY;
-            
-            m3 = macroBoard[2][i];          //casuta dreapta
-            emptyCellY = (m3 == -1) ? 2 : emptyCellY;
-            
-            if(canWeFinalClose(m1, m2, m3)) {
-                closeMoves.add(makeBounds(emptyCellY * 3, i * 3));
-            }
-        }
-        
-        //verific daca pot inchide pe diagonala principala
-        
-        m11 = macroBoard[0][0];
-        emptyCellX = (m11 == -1) ? 0 : emptyCellX;
-        emptyCellY = (m11 == -1) ? 0 : emptyCellY;
-        
-        m22 = macroBoard[1][1];
-        emptyCellX = (m22 == -1) ? 1 : emptyCellX;
-        emptyCellY = (m22 == -1) ? 1 : emptyCellY;
-        
-        m33 = macroBoard[2][2];
-        emptyCellX = (m33 == -1) ? 2 : emptyCellX;
-        emptyCellY = (m33 == -1) ? 2 : emptyCellY;
-        
-        if(canWeFinalClose(m11, m22, m33)) {
-            closeMoves.add(makeBounds(emptyCellX * 3, emptyCellY * 3));
-        }
-        
-        //verific daca pot inchide pe diagonala secundara
-        
-        m13 = macroBoard[0][2];
-        emptyCellX = (m13 == -1) ? 0 : emptyCellX;
-        emptyCellY = (m13 == -1) ? 2 : emptyCellY;
-        
-        m22 = macroBoard[1][1];
-        emptyCellX = (m22 == -1) ? 1 : emptyCellX;
-        emptyCellY = (m22 == -1) ? 1 : emptyCellY;
-        
-        m31= macroBoard[2][0];
-        emptyCellX = (m31 == -1) ? 2 : emptyCellX;
-        emptyCellY = (m31 == -1) ? 0 : emptyCellY;
-        
-        if(canWeCloseTheLine(m13, m22, m31))
-            closeMoves.add(makeBounds(emptyCellX * 3, emptyCellY * 3));
-        
-        // daca nu am putut inchide nicio linie (diagonala)
+        // Daca nu am putut inchide nicio linie (diagonala), intoarcem null
         if(closeMoves.isEmpty())
             return null;
         
@@ -477,7 +308,6 @@ public class BotStarter {
         if(canEnemyCloseTheLine(m11, m22, m33))
             enemyCloseMoves.add(new Move(emptyCellX, emptyCellY));
         
-        
         //verific daca adversarul poate inchide pe diagonala secundara
         
         m13=moves[b.x_min][b.y_max - 1];
@@ -550,8 +380,6 @@ public class BotStarter {
         return best;
     }
     
-    // DUPLICATE CODE
-    
     private Move getBestBlockMove(List<Move> closeMoves, Field field) {
         
         Move best = closeMoves.get(0);
@@ -564,7 +392,7 @@ public class BotStarter {
         return best;
     }
     
-    public Move calculate(Field field, Bounds position) {
+    private Move calculate(Field field, Bounds position) {
         
         Move move = null;
         int[][] moves = field.getAvailableMoves();
@@ -577,6 +405,7 @@ public class BotStarter {
         if(closeMoves != null)
             return getBestMoveToWin(closeMoves, field); // returneaza mutarea de inchidere cea mai buna
         
+        // Obtinem lista de mutari de inchidere pe care le are adversarul
         closeMoves = getEnemyCloseMoves(field, position);
         
         if(closeMoves != null)
@@ -607,10 +436,7 @@ public class BotStarter {
                         
                     } else {
                         
-                        //if(getEnemyCloseMoves(field, getMacroboardBounds(i, j)) != null) {
-                        ;
-                        //} else {
-                        
+                        // Luam cea mai buna mutare din microBoard-ul curent
                         if(bestNextMove != null) {
                             
                             if(dominance(field, bestNextMove) < dominance(field, getMacroboardBounds(i, j))) {
@@ -624,7 +450,6 @@ public class BotStarter {
                             bestNextMove = getMacroboardBounds(i, j);
                             move = new Move(i, j);
                         }
-                        //}
                     }
                 }
             }
@@ -647,11 +472,14 @@ public class BotStarter {
     public Move makeTurn(Field field) {
         
         //returneaza tabela 9x9 cu mutari de la runda curenta
-        Move move = null;
+        
+        Move move = null;                    // mutarea pe care o vom intoarce
         int[][] moves = field.getAvailableMoves();
         
-        int y_min=0,y_max=3,x_min=0,x_max=3;
+        int y_min=0,y_max=3,x_min=0,x_max=3;    // coordonatele primului microBoard
         
+        
+        // Daca suntem la inceputul jocului, facem prima mutare
         if(field.atTheBeginning()) {
             
             setEmpty(getCadran(makeBounds(3, 3)));
@@ -667,15 +495,19 @@ public class BotStarter {
             
             List<Move> closeMoves = null;
             
+            // Daca sunt in microBoard-ul activ (din stanga sus) (daca nu e inchis deja)
             if(field.isInActiveMicroboard(1, 1)) {
                 
+                // Iau toate mutarile de inchidere (daca exista)
                 closeMoves = getCloseMoves(field, makeBounds(1, 1));
                 
+                // Returnam mutarea de inchidere cea mai buna
                 if(closeMoves != null) {
                     return getBestMoveToWin(closeMoves, field);
                 }
             }
             
+            // Similar pentru toate cele 8 microBoard-uri ramase
             if(field.isInActiveMicroboard(1, 4)) {
                 
                 closeMoves = getCloseMoves(field, makeBounds(1, 4));
@@ -749,9 +581,8 @@ public class BotStarter {
                 
             }
             
-            // Layer_3 -> daca nu a intrat pe nicio situatie, iau prima pozitie
-            // libera
-            
+            // Layer_2 -> daca nu a intrat pe nicio situatie, iau prima pozitie libera
+
             for(int i = 0; i < 9; i++) {
                 for(int j = 0; j < 9; j++) {
                     if(moves[i][j] == 0 && field.isInActiveMicroboard(i, j))
@@ -760,19 +591,21 @@ public class BotStarter {
             }
             
         } else {
-            //verifica daca macroboard-ul activ este stanga sus
+            
+            //Verifica daca macroboard-ul activ este stanga sus
             if(field.isInActiveMicroboard(1, 1))
             {
                 
-                //stabilesc limitele macroboard-ului in tabela mare
+                //Stabilesc limitele macroboard-ului in tabela mare
                 x_min=0;
                 x_max=3;
                 y_min=0;
                 y_max=3;
                 
-                //incerc sa gasesc o mutare decisiva in macroboard
-                move=this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
-                if(move!=null)
+                //Incerc sa gasesc o mutare decisiva in macroboard
+                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                
+                if(move != null)
                     return move;
             }
             
@@ -787,8 +620,9 @@ public class BotStarter {
                 y_max=6;
                 
                 //incerc sa gasesc o mutare decisiva in macroboard
-                move=this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
-                if(move!=null)
+                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                
+                if(move != null)
                     return move;
             }
             
@@ -801,9 +635,11 @@ public class BotStarter {
                 x_max=3;
                 y_min=6;
                 y_max=9;
+                
                 //incerc sa gasesc o mutare decisiva in macroboard
-                move=this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
-                if(move!=null)
+                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                
+                if(move != null)
                     return move;
             }
             
@@ -816,9 +652,11 @@ public class BotStarter {
                 x_max=6;
                 y_min=0;
                 y_max=3;
+                
                 //incerc sa gasesc o mutare decisiva in macroboard
-                move=this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
-                if(move!=null)
+                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                
+                if(move != null)
                     return move;
             }
             
@@ -831,9 +669,11 @@ public class BotStarter {
                 x_max=6;
                 y_min=3;
                 y_max=6;
+                
                 //incerc sa gasesc o mutare decisiva in macroboard
-                move=this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
-                if(move!=null)
+                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                
+                if(move != null)
                     return move;
             }
             
@@ -846,9 +686,11 @@ public class BotStarter {
                 x_max=6;
                 y_min=6;
                 y_max=9;
+                
                 //incerc sa gasesc o mutare decisiva in macroboard
-                move=this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
-                if(move!=null)
+                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                
+                if(move != null)
                     return move;
             }
             
@@ -861,8 +703,10 @@ public class BotStarter {
                 x_max=9;
                 y_min=0;
                 y_max=3;
+                
                 //incerc sa gasesc o mutare decisiva in macroboard
-                move=this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                
                 if(move!=null)
                     return move;
             }
@@ -876,10 +720,11 @@ public class BotStarter {
                 x_max=9;
                 y_min=3;
                 y_max=6;
-                //incerc sa gasesc o mutare decisiva in macroboard
-                move=this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
                 
-                if(move!=null)
+                //incerc sa gasesc o mutare decisiva in macroboard
+                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                
+                if(move != null)
                     return move;
             }
             //verifica daca macroboard-ul activ este drepta jos
@@ -891,16 +736,17 @@ public class BotStarter {
                 x_max=9;
                 y_min=6;
                 y_max=9;
-                //incerc sa gasesc o mutare decisiva in macroboard
-                move=this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
                 
-                if(move!=null)
+                //incerc sa gasesc o mutare decisiva in macroboard
+                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                
+                if(move != null)
                     return move;
             }
             
-        } // am inchis else-ul
+        } // Am inchis else-ul
         
-        //daca nu am gasit nicio mutare decisiva pun prima mutare
+        //Daca nu am gasit nicio mutare decisiva punem prima mutare
         //valabila din ultimul macroboard activ gasit
         
         for (int x = x_min; x < x_max; x++)
@@ -918,7 +764,7 @@ public class BotStarter {
         parser.run();
     }
     
-    //Afla cadranul actual in care ne aflam
+    //Afla microBoard-ul actual in care ne aflam
     public Bounds makeBounds(int x, int y){
         
         Bounds b = null;
@@ -952,7 +798,7 @@ public class BotStarter {
         return b;
     }
     
-    //In functie de Bounds returneaza numarul cadranului (intre 0 si 8)
+    //In functie de Bounds returneaza numarul microBoard-ului (intre 0 si 8)
     public int getCadran(Bounds b){
         
         if(b.x_min == 0){
@@ -986,7 +832,7 @@ public class BotStarter {
         return 0;
     }
     
-    //Seteaza 1 pe pozitia cadranului in care am introdus o noua valoare
+    //Seteaza 1 pe pozitia microBoard-ului in care am introdus o noua valoare
     public void setEmpty(int pos){
         
         if(pos == 0)
@@ -1009,7 +855,7 @@ public class BotStarter {
             empty[2][2] = 1;
     }
     
-    //Returneaza daca cadranul in care vrem sa punem este liber sau nu
+    //Returneaza numarul de ordine al microBoard-ului in care vrem sa punem este liber sau nu
     public int getEmpty(int x, int y){
         
         int pos = getCadran(makeBounds(x,y));
