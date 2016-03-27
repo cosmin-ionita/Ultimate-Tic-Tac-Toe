@@ -107,6 +107,18 @@ public class Field {
 	public int[][] getAvailableMoves() {
 		return mBoard;
 	}
+        
+        public Boolean atTheBeginning() {
+            
+            for(int i = 0; i < COLS / 3; i++) {
+                for(int j = 0; j < ROWS / 3; j++) {
+                    if(mMacroboard[i][j] != -1)
+                        return false;
+                }
+            }
+            
+            return true;
+        }
 	
         //verific daca microboard-ul ce contine pozitia (x,y) x<9,y<9
         //se poate juca in runda curenta
@@ -119,6 +131,27 @@ public class Field {
         public Boolean isHisMicroboard(int x, int y) {
 	    return mMacroboard[(int) x/3][(int) y/3] == BotParser.hBotId;
 	}
+        
+        public int[][] getMacroBoard() {
+            return mMacroboard;
+        }
+        
+        public Boolean entireBoardAvailable() {
+            
+            int counter = 0;
+            
+            for(int i = 0; i < COLS / 3; i++) {
+                for(int j = 0; j < ROWS / 3; j++) {
+                    if(mMacroboard[i][j] == -1)
+                        counter++;
+                }
+            }
+            
+            if(counter > 1)
+                return true;
+            
+            return false;
+        }
         
         //verific daca microboard-ul ce contine pozitia (x,y) x<9 , y<9 
         //este inchis de mine
