@@ -418,7 +418,6 @@ public class BotStarter {
             setEmpty(getCadran(position));
         }
         
-        
         for(int i = position.x_min; i<position.x_max; i++)
         {
             for(int j = position.y_min; j<position.y_max; j++)
@@ -469,6 +468,12 @@ public class BotStarter {
         return move;
     }
     
+    private Move getMoveByMonteCarlo(Field field) {
+        
+        // COMPLETE BY MERGE
+        return null;
+    }
+    
     public Move makeTurn(Field field) {
         
         //returneaza tabela 9x9 cu mutari de la runda curenta
@@ -490,105 +495,8 @@ public class BotStarter {
         
         if(field.entireBoardAvailable()) {  // daca am la dispozitie tot field-ul
             
-            
-            // Layer_1 -> (default) -> inchid prima casuta care poate fi inchisa
-            
-            List<Move> closeMoves = null;
-            
-            // Daca sunt in microBoard-ul activ (din stanga sus) (daca nu e inchis deja)
-            if(field.isInActiveMicroboard(1, 1)) {
-                
-                // Iau toate mutarile de inchidere (daca exista)
-                closeMoves = getCloseMoves(field, makeBounds(1, 1));
-                
-                // Returnam mutarea de inchidere cea mai buna
-                if(closeMoves != null) {
-                    return getBestMoveToWin(closeMoves, field);
-                }
-            }
-            
-            // Similar pentru toate cele 8 microBoard-uri ramase
-            if(field.isInActiveMicroboard(1, 4)) {
-                
-                closeMoves = getCloseMoves(field, makeBounds(1, 4));
-                
-                if(closeMoves != null) {
-                    return getBestMoveToWin(closeMoves, field);
-                }
-            }
-            
-            if(field.isInActiveMicroboard(1, 7)) {
-                
-                closeMoves = getCloseMoves(field, makeBounds(1, 7));
-                
-                if(closeMoves != null) {
-                    return getBestMoveToWin(closeMoves, field);
-                }
-            }
-            
-            if(field.isInActiveMicroboard(4, 1)) {
-                
-                closeMoves = getCloseMoves(field, makeBounds(4, 1));
-                
-                if(closeMoves != null) {
-                    return getBestMoveToWin(closeMoves, field);
-                }
-            }
-            
-            if(field.isInActiveMicroboard(4, 4)) {
-                
-                closeMoves = getCloseMoves(field, makeBounds(4, 4));
-                
-                if(closeMoves != null) {
-                    return getBestMoveToWin(closeMoves, field);
-                }
-            }
-            
-            if(field.isInActiveMicroboard(4, 7)) {
-                
-                closeMoves = getCloseMoves(field, makeBounds(4, 7));
-                
-                if(closeMoves != null) {
-                    return getBestMoveToWin(closeMoves, field);
-                }
-            }
-            
-            if(field.isInActiveMicroboard(7, 1)) {
-                
-                closeMoves = getCloseMoves(field, makeBounds(7, 1));
-                
-                if(closeMoves != null) {
-                    return getBestMoveToWin(closeMoves, field);
-                }
-            }
-            
-            if(field.isInActiveMicroboard(7, 4)) {
-                
-                closeMoves = getCloseMoves(field, makeBounds(7, 4));
-                
-                if(closeMoves != null) {
-                    return getBestMoveToWin(closeMoves, field);
-                }
-            }
-            
-            if(field.isInActiveMicroboard(7, 7)) {
-                
-                closeMoves = getCloseMoves(field, makeBounds(7, 7));
-                
-                if(closeMoves != null) {
-                    return getBestMoveToWin(closeMoves, field);
-                }
-                
-            }
-            
-            // Layer_2 -> daca nu a intrat pe nicio situatie, iau prima pozitie libera
-
-            for(int i = 0; i < 9; i++) {
-                for(int j = 0; j < 9; j++) {
-                    if(moves[i][j] == 0 && field.isInActiveMicroboard(i, j))
-                        return new Move(i, j);
-                }
-            }
+            // Doar de test. Trebuie sa vedem cum se comporta in timp fata de negamax
+            return getMoveByMonteCarlo(field);
             
         } else {
             
