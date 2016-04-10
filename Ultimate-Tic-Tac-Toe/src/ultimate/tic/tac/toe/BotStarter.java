@@ -498,6 +498,9 @@ public class BotStarter {
     
     private Move getMoveByNegamax(Field field, Bounds microBoard) {
         
+        // Algoritmul trebuie sa aiba o adancime adaptiva in functie
+        // de numarul de mutari disponibile.
+        
         // COMPLETE BY MERGE
         return null;
     }
@@ -515,9 +518,9 @@ public class BotStarter {
         
         } else {
 
-            // Daca putem inchide, inchidem (teoretic aici ar trebui un Negamax)
+            // Daca putem inchide, inchidem (teoretic aici ar trebui un Negamax
             // dar o sa aiba un timp de rulare mult prea mare pentru ca sunt multe
-            // stari de procesat.
+            // stari de procesat)
             
             List<Move> closeMoves = getCloseMoves(field, microBoard);
 
