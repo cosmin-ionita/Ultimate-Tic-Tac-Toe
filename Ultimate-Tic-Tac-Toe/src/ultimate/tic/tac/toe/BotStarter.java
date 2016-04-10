@@ -591,7 +591,7 @@ public class BotStarter {
                 y_max=6;
                 
                 //incerc sa gasesc o mutare decisiva in macroboard
-                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                move = this.getBestMove(field, new Bounds(x_min,x_max,y_min,y_max));
                 
                 if(move != null)
                     return move;
@@ -608,7 +608,7 @@ public class BotStarter {
                 y_max=9;
                 
                 //incerc sa gasesc o mutare decisiva in macroboard
-                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                move = this.getBestMove(field, new Bounds(x_min,x_max,y_min,y_max));
                 
                 if(move != null)
                     return move;
@@ -625,7 +625,7 @@ public class BotStarter {
                 y_max=3;
                 
                 //incerc sa gasesc o mutare decisiva in macroboard
-                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                move = this.getBestMove(field, new Bounds(x_min,x_max,y_min,y_max));
                 
                 if(move != null)
                     return move;
@@ -642,7 +642,7 @@ public class BotStarter {
                 y_max=6;
                 
                 //incerc sa gasesc o mutare decisiva in macroboard
-                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                move = this.getBestMove(field, new Bounds(x_min,x_max,y_min,y_max));
                 
                 if(move != null)
                     return move;
@@ -659,7 +659,7 @@ public class BotStarter {
                 y_max=9;
                 
                 //incerc sa gasesc o mutare decisiva in macroboard
-                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                move = this.getBestMove(field, new Bounds(x_min,x_max,y_min,y_max));
                 
                 if(move != null)
                     return move;
@@ -676,7 +676,7 @@ public class BotStarter {
                 y_max=3;
                 
                 //incerc sa gasesc o mutare decisiva in macroboard
-                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                move = this.getBestMove(field, new Bounds(x_min,x_max,y_min,y_max));
                 
                 if(move!=null)
                     return move;
@@ -693,7 +693,7 @@ public class BotStarter {
                 y_max=6;
                 
                 //incerc sa gasesc o mutare decisiva in macroboard
-                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                move = this.getBestMove(field, new Bounds(x_min,x_max,y_min,y_max));
                 
                 if(move != null)
                     return move;
@@ -709,13 +709,17 @@ public class BotStarter {
                 y_max=9;
                 
                 //incerc sa gasesc o mutare decisiva in macroboard
-                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                move = this.getBestMove(field, new Bounds(x_min,x_max,y_min,y_max));
                 
                 if(move != null)
                     return move;
             }
             
         } // Am inchis else-ul
+        
+        /*  Aceasta zona de default nu ar mai trebui sa existe, pentru ca
+            Negamax-ul sau Monte Carlo-ul trebuie sa returneaze mereu o mutare
+            valida */
         
         //Daca nu am gasit nicio mutare decisiva punem prima mutare
         //valabila din ultimul macroboard activ gasit
