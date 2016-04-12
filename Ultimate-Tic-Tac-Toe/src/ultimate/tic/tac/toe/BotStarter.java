@@ -1037,6 +1037,8 @@ public class BotStarter {
             total += dominanata;
             if(getEnemyCloseMoves(field, future) != null)
                 total -= 10;
+            if(field.entireBoardAvailable())
+                total -= 8;
             return total;
         }
         
@@ -1051,6 +1053,8 @@ public class BotStarter {
                 total -= 5;
             if(getCloseMoves(field, future) != null)
                 total -= 10;
+            if(field.entireBoardAvailable())
+                total -= 8;
             return total; 
         }
 }
