@@ -886,4 +886,153 @@ public class BotStarter {
             val = empty[2][2];
         return val;
     }
+    
+    //move m = monteCarlo(field, make_Monte(field, new Bounds(x_min,x_max,y_min,y_max)), player, player);
+    //Ading stuff
+    
+    //Creaza o clona a field-ului actual pentru a nu modifica field-ul cat timp utilizam Monte Carlo
+    public Field clone(Field old) {
+        Field newField = new Field();
+        int i,j;
+        for(i=0;i<9;i++)
+            for(j=0;j<9;j++)
+                newField.mBoard[i][j]=old.mBoard[i][j];
+        for(i=0;i<3;i++)
+            for(j=0;j<3;j++)
+                newField.mMacroboard[i][j]=old.mMacroboard[i][j];
+        return newField;
+    }
+    
+    //Monte Carlo algorithm - formeaza lista de optiune is pentru fiecare posibila
+    //miscare, calculeaza un scor pe baza celor mai eficiente mutari random
+    public Move monteCarlo(Field field, ArrayList<Move> options, int player, int original_player){
+             
+        Move next = null;
+        int max = -1000;
+        for(int i = 0; i < options.size(); i++){
+                
+            Field myClone = clone(field);
+                 myClone.mBoard[options.get(i).mX][options.get(i).mY] = player;
+                 if(player == 1)
+                     player = 2;
+                 else
+                     player = 1;
+                 Bounds b = getMacroboardBounds(options.get(i).mX, options.get(i).mY);
+                 int val = random_value(myClone, b, player, 0, 5, original_player);
+                 if(val >= max){
+                    
+                    max = val;
+                    next = options.get(i);
+                }
+             }
+             return next;
+         }
+         
+         // Monte Carlo algorithm
+         public int random_value(Field field, Bounds b, int player, int total, int steps, int original_player){
+             
+             if(steps == 0)
+                 return total;
+             Move move = null;
+             Random randomGenerator = new Random();
+             int max_score = -1000;
+             ArrayList<Move> move_list = new ArrayList<Move>();
+             int[][] moves = field.getAvailableMoves();
+             for(int i = b.x_min; i < b.x_max; i++)
+                 for(int j = b.y_min; j < b.y_max; j++){
+                    
+                        if(moves[i][j] == 0){
+                        
+                            int sc;
+                            if(player == original_player)
+                                sc = score (field, getMacroboardBounds(i, j));
+                            else
+                                sc = enemyScore(field, getMacroboardBounds(i, j));
+                            if(sc >= max_score)
+                                max_score = sc;
+                        }
+                    }
+                for(int i = b.x_min; i < b.x_max; i++)
+                    for(int j = b.y_min; j < b.y_max; j++)
+                        if(moves[i][j] == 0){
+                        
+                            int sc;
+                            if(player == original_player)
+                                sc = score (field, getMacroboardBounds(i, j));
+                            else
+                                sc = enemyScore(field, getMacroboardBounds(i, j));
+                            if(sc == max_score)
+                                move_list.add(new Move(i,j));
+                        }   
+                int index = randomGenerator.nextInt(move_list.size());
+                Move picked = move_list.get(index);
+                total += max_score;
+                steps--;
+                Field myClone = clone(field);
+                myClone.mBoard[picked.mX][picked.mY] = player;
+                if(player == 2)
+                    player = 1;
+                else
+                    player = 2;
+                Bounds b2 = getMacroboardBounds(picked.mX, picked.mY);
+                return random_value(myClone, b2, player, total, steps, original_player);
+         }
+        
+        //Formeaza o lista de posibile viitoare mutari
+        public ArrayList<Move> make_Monte(Field field, Bounds b){
+            
+                int max_score = -1000;
+                ArrayList<Move> random_moves = new ArrayList<Move>();
+                int[][] moves = field.getAvailableMoves();
+                for(int i = b.x_min; i < b.x_max; i++)
+                 for(int j = b.y_min; j < b.y_max; j++){
+                    
+                        if(moves[i][j] == 0){
+                        
+                            int sc = score (field, getMacroboardBounds(i, j));
+                            if(sc >= max_score)
+                                max_score = sc;
+                        }
+                    }
+                for(int i = b.x_min; i < b.x_max; i++)
+                    for(int j = b.y_min; j < b.y_max; j++)
+                        if(moves[i][j] == 0){
+                        
+                            int sc = score (field, getMacroboardBounds(i, j));
+                            if(sc == max_score)
+                                random_moves.add(new Move(i,j));
+                        }   
+                return random_moves;
+        }
+        
+        //Functia care intoarce scorul pentru mutarea noastra
+        public int score(Field field, Bounds future){
+            
+            int total = 0;
+            int dominanata = dominance(field, future);
+            if(getCloseMoves(field, future) != null)
+                total -= 5;
+            total += dominanata;
+            if(getEnemyCloseMoves(field, future) != null)
+                total -= 10;
+            if(field.entireBoardAvailable())
+                total -= 8;
+            return total;
+        }
+        
+        //Functia care intoarce scorul pentru bot-ul rival
+        public int enemyScore(Field field, Bounds future){
+            
+            int total = 0;
+            int dominanta = 0;
+            dominanta -= dominance(field, future);
+            total += dominanta;
+            if(getEnemyCloseMoves(field, future) != null)
+                total -= 5;
+            if(getCloseMoves(field, future) != null)
+                total -= 10;
+            if(field.entireBoardAvailable())
+                total -= 8;
+            return total; 
+        }
 }
