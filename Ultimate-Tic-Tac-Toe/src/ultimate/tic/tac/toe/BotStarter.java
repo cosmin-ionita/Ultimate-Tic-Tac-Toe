@@ -908,4 +908,17 @@ public class BotStarter {
             val = empty[2][2];
         return val;
     }
+    
+    //Ading stuff
+    public Field clone(Field old) {
+        Field newField = new Field();
+        int i,j;
+        for(i=0;i<9;i++)
+            for(j=0;j<9;j++)
+                newField.mBoard[i][j]=old.mBoard[i][j];
+        for(i=0;i<3;i++)
+            for(j=0;j<3;j++)
+                newField.mMacroboard[i][j]=old.mMacroboard[i][j];
+        return newField;
+    }    
 }
