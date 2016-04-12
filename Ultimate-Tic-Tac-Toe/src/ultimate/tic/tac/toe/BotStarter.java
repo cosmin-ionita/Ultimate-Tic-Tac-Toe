@@ -71,7 +71,7 @@ public class BotStarter {
     
     
     //Verifica daca microBoard-ul dat prin limitele sale (bonuds) este liber
-    public boolean checkEmptyCadran(int[][] moves, Bounds b){
+    private boolean checkEmptyCadran(int[][] moves, Bounds b){
         
         for(int i = b.x_min; i < b.x_max; i++)
             for(int j = b.y_min; j < b.y_max; j++){
@@ -84,7 +84,7 @@ public class BotStarter {
     }
     
     //Verifica daca mai sunt microBoard-uri libere
-    public boolean areEmptyCells(){
+    private boolean areEmptyCells(){
         
         for(int i = 0; i < 3; i++)
             for(int j = 0; j < 3; j++)
@@ -93,11 +93,28 @@ public class BotStarter {
         return false;
     }
     
+    // Intoarce numarul de celule libere dintr-un microBoard (3 x 3)
+    private int getFreeCells(Field field, Bounds microBoard) {
+        
+        int result = 0;
+        
+        int[][] moves = field.getAvailableMoves();
+        
+        for(int i = microBoard.x_min; i<microBoard.x_max; i++) {
+            for(int j = microBoard.y_min; j<microBoard.y_max; j++) {
+                if(moves[i][j] == 0)
+                    result++;
+            }
+        }
+        
+        return result;
+    }
+    
     
     //  Verifica daca mutarea M1 este mai buna decat mutarea M2 prin analiza
     //  dominantei pe care o avem in microBoard-urile corespunzatoare.
     
-    public boolean checkIfBetter(Move m1, Move m2, Field f) {
+    private boolean checkIfBetter(Move m1, Move m2, Field f) {
         
         Bounds microBoard_m1 = getMacroboardBounds(m1.mX, m1.mY);
         Bounds microBoard_m2 = getMacroboardBounds(m2.mX, m2.mY);
@@ -411,13 +428,11 @@ public class BotStarter {
         if(closeMoves != null)
             return getBestBlockMove(closeMoves, field); // returneaza mutarea de blocare cea mai buna
         
-        
         // Daca sunt trimis intr-un microBoard gol, atunci actualizez empty-ul
         
         if(checkEmptyCadran(moves, position)) {
             setEmpty(getCadran(position));
         }
-        
         
         for(int i = position.x_min; i<position.x_max; i++)
         {
@@ -469,6 +484,62 @@ public class BotStarter {
         return move;
     }
     
+    private Move getMoveByMonteCarlo(Field field) {
+        
+        // COMPLETE BY MERGE
+        return null;
+    }
+    
+    private Move getMoveByMonteCarlo(Field field, Bounds microBoard) {
+        
+        // COMPLETE BY MERGE
+        return null;
+    }
+    
+    private Move getMoveByNegamax(Field field, Bounds microBoard) {
+        
+        // Algoritmul trebuie sa aiba o adancime adaptiva in functie
+        // de numarul de mutari disponibile.
+        
+        // COMPLETE BY MERGE
+        return null;
+    }
+    
+    
+    // Aici se ia decizia de adaptare a algoritmului la starea curenta a jocului.
+    
+    private Move getBestMove(Field field, Bounds microBoard) {
+        
+        int freeCells = this.getFreeCells(field, microBoard);
+        
+        if(freeCells < 5) {  // daca am un numar relativ mic de celule libere
+            
+            return getMoveByNegamax(field, microBoard);
+        
+        } else {
+
+            // Daca putem inchide, inchidem (teoretic aici ar trebui un Negamax
+            // dar o sa aiba un timp de rulare mult prea mare pentru ca sunt multe
+            // stari de procesat)
+            
+            List<Move> closeMoves = getCloseMoves(field, microBoard);
+
+            if(closeMoves != null) {
+                return getBestMoveToWin(closeMoves, field);
+            }
+            
+            // Daca putem bloca atunci il blocam
+            List<Move> blockMoves = getEnemyCloseMoves(field, microBoard);
+            
+            if(blockMoves != null) {
+                return getBestBlockMove(blockMoves, field);
+            }
+            
+            // Daca avem o tabla rara fara posibiltate de inchidere/blocare
+            return getMoveByMonteCarlo(field, microBoard);
+        }
+    }
+    
     public Move makeTurn(Field field) {
         
         //returneaza tabela 9x9 cu mutari de la runda curenta
@@ -490,105 +561,8 @@ public class BotStarter {
         
         if(field.entireBoardAvailable()) {  // daca am la dispozitie tot field-ul
             
-            
-            // Layer_1 -> (default) -> inchid prima casuta care poate fi inchisa
-            
-            List<Move> closeMoves = null;
-            
-            // Daca sunt in microBoard-ul activ (din stanga sus) (daca nu e inchis deja)
-            if(field.isInActiveMicroboard(1, 1)) {
-                
-                // Iau toate mutarile de inchidere (daca exista)
-                closeMoves = getCloseMoves(field, makeBounds(1, 1));
-                
-                // Returnam mutarea de inchidere cea mai buna
-                if(closeMoves != null) {
-                    return getBestMoveToWin(closeMoves, field);
-                }
-            }
-            
-            // Similar pentru toate cele 8 microBoard-uri ramase
-            if(field.isInActiveMicroboard(1, 4)) {
-                
-                closeMoves = getCloseMoves(field, makeBounds(1, 4));
-                
-                if(closeMoves != null) {
-                    return getBestMoveToWin(closeMoves, field);
-                }
-            }
-            
-            if(field.isInActiveMicroboard(1, 7)) {
-                
-                closeMoves = getCloseMoves(field, makeBounds(1, 7));
-                
-                if(closeMoves != null) {
-                    return getBestMoveToWin(closeMoves, field);
-                }
-            }
-            
-            if(field.isInActiveMicroboard(4, 1)) {
-                
-                closeMoves = getCloseMoves(field, makeBounds(4, 1));
-                
-                if(closeMoves != null) {
-                    return getBestMoveToWin(closeMoves, field);
-                }
-            }
-            
-            if(field.isInActiveMicroboard(4, 4)) {
-                
-                closeMoves = getCloseMoves(field, makeBounds(4, 4));
-                
-                if(closeMoves != null) {
-                    return getBestMoveToWin(closeMoves, field);
-                }
-            }
-            
-            if(field.isInActiveMicroboard(4, 7)) {
-                
-                closeMoves = getCloseMoves(field, makeBounds(4, 7));
-                
-                if(closeMoves != null) {
-                    return getBestMoveToWin(closeMoves, field);
-                }
-            }
-            
-            if(field.isInActiveMicroboard(7, 1)) {
-                
-                closeMoves = getCloseMoves(field, makeBounds(7, 1));
-                
-                if(closeMoves != null) {
-                    return getBestMoveToWin(closeMoves, field);
-                }
-            }
-            
-            if(field.isInActiveMicroboard(7, 4)) {
-                
-                closeMoves = getCloseMoves(field, makeBounds(7, 4));
-                
-                if(closeMoves != null) {
-                    return getBestMoveToWin(closeMoves, field);
-                }
-            }
-            
-            if(field.isInActiveMicroboard(7, 7)) {
-                
-                closeMoves = getCloseMoves(field, makeBounds(7, 7));
-                
-                if(closeMoves != null) {
-                    return getBestMoveToWin(closeMoves, field);
-                }
-                
-            }
-            
-            // Layer_2 -> daca nu a intrat pe nicio situatie, iau prima pozitie libera
-
-            for(int i = 0; i < 9; i++) {
-                for(int j = 0; j < 9; j++) {
-                    if(moves[i][j] == 0 && field.isInActiveMicroboard(i, j))
-                        return new Move(i, j);
-                }
-            }
+            // Doar de test. Trebuie sa vedem cum se comporta in timp fata de negamax.
+            return getMoveByMonteCarlo(field);
             
         } else {
             
@@ -603,7 +577,7 @@ public class BotStarter {
                 y_max=3;
                 
                 //Incerc sa gasesc o mutare decisiva in macroboard
-                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                move = this.getBestMove(field, new Bounds(x_min,x_max,y_min,y_max));
                 
                 if(move != null)
                     return move;
@@ -620,7 +594,7 @@ public class BotStarter {
                 y_max=6;
                 
                 //incerc sa gasesc o mutare decisiva in macroboard
-                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                move = this.getBestMove(field, new Bounds(x_min,x_max,y_min,y_max));
                 
                 if(move != null)
                     return move;
@@ -637,7 +611,7 @@ public class BotStarter {
                 y_max=9;
                 
                 //incerc sa gasesc o mutare decisiva in macroboard
-                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                move = this.getBestMove(field, new Bounds(x_min,x_max,y_min,y_max));
                 
                 if(move != null)
                     return move;
@@ -654,7 +628,7 @@ public class BotStarter {
                 y_max=3;
                 
                 //incerc sa gasesc o mutare decisiva in macroboard
-                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                move = this.getBestMove(field, new Bounds(x_min,x_max,y_min,y_max));
                 
                 if(move != null)
                     return move;
@@ -671,7 +645,7 @@ public class BotStarter {
                 y_max=6;
                 
                 //incerc sa gasesc o mutare decisiva in macroboard
-                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                move = this.getBestMove(field, new Bounds(x_min,x_max,y_min,y_max));
                 
                 if(move != null)
                     return move;
@@ -688,7 +662,7 @@ public class BotStarter {
                 y_max=9;
                 
                 //incerc sa gasesc o mutare decisiva in macroboard
-                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                move = this.getBestMove(field, new Bounds(x_min,x_max,y_min,y_max));
                 
                 if(move != null)
                     return move;
@@ -705,7 +679,7 @@ public class BotStarter {
                 y_max=3;
                 
                 //incerc sa gasesc o mutare decisiva in macroboard
-                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                move = this.getBestMove(field, new Bounds(x_min,x_max,y_min,y_max));
                 
                 if(move!=null)
                     return move;
@@ -722,7 +696,7 @@ public class BotStarter {
                 y_max=6;
                 
                 //incerc sa gasesc o mutare decisiva in macroboard
-                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                move = this.getBestMove(field, new Bounds(x_min,x_max,y_min,y_max));
                 
                 if(move != null)
                     return move;
@@ -738,13 +712,17 @@ public class BotStarter {
                 y_max=9;
                 
                 //incerc sa gasesc o mutare decisiva in macroboard
-                move = this.calculate(field, new Bounds(x_min,x_max,y_min,y_max));
+                move = this.getBestMove(field, new Bounds(x_min,x_max,y_min,y_max));
                 
                 if(move != null)
                     return move;
             }
             
         } // Am inchis else-ul
+        
+        /*  Aceasta zona de default nu ar mai trebui sa existe, pentru ca
+            Negamax-ul sau Monte Carlo-ul trebuie sa returneaze mereu o mutare
+            valida */
         
         //Daca nu am gasit nicio mutare decisiva punem prima mutare
         //valabila din ultimul macroboard activ gasit
