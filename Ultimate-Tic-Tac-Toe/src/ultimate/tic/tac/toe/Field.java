@@ -32,8 +32,8 @@ import java.util.ArrayList;
 public class Field {
     private int mRoundNr;
     private int mMoveNr;
-	private int[][] mBoard;
-	private int[][] mMacroboard;
+	public int[][] mBoard;
+	public int[][] mMacroboard;
 
 	private final int COLS = 9, ROWS = 9;
 	private String mLastError = "";
