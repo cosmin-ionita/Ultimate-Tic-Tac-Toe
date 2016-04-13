@@ -918,7 +918,7 @@ public class BotStarter {
                  else
                      player = 1;
                  Bounds b = getMacroboardBounds(options.get(i).mX, options.get(i).mY);
-                 int val = random_value(myClone, b, player, 0, 5, original_player);
+                 int val = random_value(myClone, b, player, 0, 10, original_player);
                  if(val >= max){
                     
                     max = val;
@@ -1016,7 +1016,9 @@ public class BotStarter {
             if(getEnemyCloseMoves(field, future) != null)
                 total -= 10;
             if(field.entireBoardAvailable())
-                total -= 8;
+                total -= 15;
+            if(getCadran(future) == 4)
+                total -= 3;
             return total;
         }
         
@@ -1032,7 +1034,7 @@ public class BotStarter {
             if(getCloseMoves(field, future) != null)
                 total -= 10;
             if(field.entireBoardAvailable())
-                total -= 8;
+                total -= 15;
             return total; 
         }
 }
