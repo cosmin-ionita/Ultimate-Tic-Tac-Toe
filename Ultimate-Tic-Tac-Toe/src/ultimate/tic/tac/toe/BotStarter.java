@@ -937,15 +937,21 @@ public class BotStarter {
              Random randomGenerator = new Random();
              int max_score = -1000;
              ArrayList<Move> move_list = new ArrayList<Move>();
+             List<Move> close_moves = getCloseMoves(field, b);
              int[][] moves = field.getAvailableMoves();
              for(int i = b.x_min; i < b.x_max; i++)
                  for(int j = b.y_min; j < b.y_max; j++){
                     
                         if(moves[i][j] == 0){
                         
-                            int sc;
-                            if(player == original_player)
-                                sc = score (field, getMacroboardBounds(i, j));
+                            int sc = 0;
+                            if(player == original_player){
+                               
+                                for(int k = 0; k < close_moves.size(); k++)
+                                    if(close_moves.get(i).mX == i && close_moves.get(i).mY == j)
+                                        sc += 2;
+                                sc += score (field, getMacroboardBounds(i, j));
+                            }
                             else
                                 sc = enemyScore(field, getMacroboardBounds(i, j));
                             if(sc >= max_score)
@@ -956,11 +962,20 @@ public class BotStarter {
                     for(int j = b.y_min; j < b.y_max; j++)
                         if(moves[i][j] == 0){
                         
-                            int sc;
-                            if(player == original_player)
-                                sc = score (field, getMacroboardBounds(i, j));
-                            else
-                                sc = enemyScore(field, getMacroboardBounds(i, j));
+                            int sc = 0;
+                            if(player == original_player){
+                                if(isAlligned(field, b, i, j, player) == true)
+                                    sc += 1;
+                                for(int k = 0; k < close_moves.size(); k++)
+                                    if(close_moves.get(i).mX == i && close_moves.get(i).mY == j)
+                                        sc += 2;
+                                sc += score (field, getMacroboardBounds(i, j));
+                            }
+                            else{
+                                if(isAlligned(field, b, i, j, player) == true)
+                                    sc += 1;
+                                sc += enemyScore(field, getMacroboardBounds(i, j));
+                            }
                             if(sc == max_score)
                                 move_list.add(new Move(i,j));
                         }   
@@ -983,13 +998,18 @@ public class BotStarter {
             
                 int max_score = -1000;
                 ArrayList<Move> random_moves = new ArrayList<Move>();
+                List<Move> close_moves = getCloseMoves(field, b);
                 int[][] moves = field.getAvailableMoves();
                 for(int i = b.x_min; i < b.x_max; i++)
                  for(int j = b.y_min; j < b.y_max; j++){
                     
                         if(moves[i][j] == 0){
                         
-                            int sc = score (field, getMacroboardBounds(i, j));
+                            int sc = 0;
+                            for(int k = 0; k < close_moves.size(); k++)
+                                if(close_moves.get(i).mX == i && close_moves.get(i).mY == j)
+                                    sc += 2;
+                            sc += score (field, getMacroboardBounds(i, j));
                             if(sc >= max_score)
                                 max_score = sc;
                         }
@@ -998,7 +1018,11 @@ public class BotStarter {
                     for(int j = b.y_min; j < b.y_max; j++)
                         if(moves[i][j] == 0){
                         
-                            int sc = score (field, getMacroboardBounds(i, j));
+                            int sc = 0;
+                            for(int k = 0; k < close_moves.size(); k++)
+                                if(close_moves.get(i).mX == i && close_moves.get(i).mY == j)
+                                    sc += 2;
+                            sc += score (field, getMacroboardBounds(i, j));
                             if(sc == max_score)
                                 random_moves.add(new Move(i,j));
                         }   
@@ -1036,5 +1060,61 @@ public class BotStarter {
             if(field.entireBoardAvailable())
                 total -= 15;
             return total; 
+        }
+        
+        //Verifica daca posibila mutarea se va afla pe aceasi linie, coloana sau diagonala
+        // cu o valoarea pusa de noi deja existenta.
+        public boolean isAligned(Field field, Bounds b, int i, int j, int player){
+            
+            int[][] moves = field.getAvailableMoves();
+            if(b.x_min <= i - 1)
+                if(moves[i - 1][j] == player)
+                    return true;
+            if(b.x_min <= i - 2)
+                if(moves[i - 2][j] == player)
+                    return true;
+            if(b.x_max > i + 1)
+                if(moves[i + 1][j] == player)
+                    return true;
+            if(b.x_max > i + 2)
+                if(moves[i + 2][j] == player)
+                    return true;
+            if(b.y_min <= j - 1)
+                if(moves[i][j - 1] == player)
+                    return true;
+            if(b.y_max > j + 1)
+                if(moves[i][j + 1] == player)
+                    return true;
+            if(b.y_min <= j - 2)
+                if(moves[i][j - 2] == player)
+                    return true;
+            if(b.y_max > j + 2)
+                if(moves[i][j + 2] == player)
+                    return true;
+            if(b.x_min <= i - 1 && b.y_min <= j - 1)
+                if(moves[i - 1][j - 1] == player)
+                    return true;
+            if(b.x_min <= i - 2 && b.y_min <= j - 2)
+                if(moves[i - 2][j - 2] == player)
+                    return true;
+            if(b.x_max > i + 1 && b.y_max > j + 1)
+                if(moves[i + 1][j + 1] == player)
+                    return true;
+            if(b.x_max > i + 2 && b.y_max > j + 2)
+                if(moves[i + 2][j + 2] == player)
+                    return true;
+            if(b.x_min <= i - 1 && b.y_max > j + 1)
+                if(moves[i - 1][j + 1] == player)
+                    return true;
+            if(b.x_min <= i - 2 && b.y_max > j + 2)
+                if(moves[i - 2][j + 2] == player)
+                    return true;
+            if(b.y_max > i + 1 && b.y_min <= j - 1)
+                if(moves[i + 1][j - 1] == player)
+                    return true;
+            if(b.y_max > i + 2 && b.y_min <= j - 2)
+                if(moves[i + 2][j - 2] == player)
+                    return true;
+            return false;
         }
 }
