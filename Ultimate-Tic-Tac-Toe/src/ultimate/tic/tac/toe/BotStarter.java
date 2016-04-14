@@ -946,12 +946,12 @@ public class BotStarter {
                             int sc = 0;
                             if(player == original_player){
                                if(isAligned(field, b, i, j, player) == true)
-                                   sc += 1;
+                                   sc += 2;
                                 sc += score (field, getMacroboardBounds(i, j));
                             }
                             else{
                                 if(isAligned(field, b, i, j, player) == true)
-                                    sc += 1;
+                                    sc += 2;
                                 sc += enemyScore(field, getMacroboardBounds(i, j));
                             }
                             if(sc >= max_score)
@@ -1081,16 +1081,40 @@ public class BotStarter {
             if(sum > 0)
                 return true;
             sum = 0;
+            
+            
             if((x == b.x_min && y == b.y_min) || (x == b.x_min + 1 && y == b.y_min + 1) || (x == b.x_min + 2 && y == b.y_min + 2)){
                 
-                sum = moves[b.x_min][b.y_min] + moves[b.x_min + 1][b.y_min + 1] + moves[b.x_min + 2][b.y_min + 2];
+                if(moves[b.x_min][b.y_min] == player)
+                    sum++;
+                else if(moves[b.x_min][b.y_min] != 0)
+                    sum--;
+                if(moves[b.x_min + 1][b.y_min + 1] == player)
+                    sum++;
+                else if(moves[b.x_min + 1][b.y_min + 1] != 0)
+                    sum--;
+                if(moves[b.x_min + 2][b.y_min + 2] == player)
+                    sum++;
+                else if(moves[b.x_min + 2][b.y_min + 2] != 0)
+                    sum--;
                 if(sum > 0)
                     return true;
             }
             sum = 0;
-            if((x == b.x_min + 2 && y == b.y_min) || (x == b.x_min + 2 && y == b.y_min + 1) || (x == b.x_min && y == b.y_min + 2)){
+            if((x == b.x_min + 2 && y == b.y_min) || (x == b.x_min + 1 && y == b.y_min + 1) || (x == b.x_min && y == b.y_min + 2)){
                 
-                sum = moves[b.x_min + 2][b.y_min] + moves[b.x_min + 1][b.y_min + 1] + moves[b.x_min][b.y_min + 2];
+                if(moves[b.x_min + 2][b.y_min] == player)
+                    sum++;
+                else if(moves[b.x_min + 2][b.y_min] != 0)
+                    sum--;
+                if(moves[b.x_min + 1][b.y_min + 1] == player)
+                    sum++;
+                else if(moves[b.x_min + 1][b.y_min + 1] != 0)
+                    sum--;
+                if(moves[b.x_min][b.y_min + 2] == player)
+                    sum++;
+                else if(moves[b.x_min][b.y_min + 2] != 0)
+                    sum--;
                 if(sum > 0)
                     return true;
             }
