@@ -136,6 +136,24 @@ public class Field {
             return mMacroboard;
         }
         
+        public Boolean isInActiveMicroboards(int x, int y) {
+	    return mMacroboard[(int) x/3][(int) y/3] == 0;
+	}
+        
+        public ArrayList<Move> getAvailableMovesMM() {
+	    ArrayList<Move> moves = new ArrayList<Move>();
+		
+		for (int y = 0; y < ROWS; y++) {
+            for (int x = 0; x < COLS; x++) {
+                if (isInActiveMicroboard(x, y) && mBoard[x][y] == 0) {
+                    moves.add(new Move(x, y));
+                }
+            }
+        }
+
+		return moves;
+	}
+        
         public Boolean entireBoardAvailable() {
             
             int counter = 0;
